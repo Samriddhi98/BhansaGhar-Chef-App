@@ -1,3 +1,4 @@
+import 'package:BhansaGharChef/widgets/forminput.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
@@ -147,28 +148,3 @@ class _SignUpState extends State<SignUp> {
   }
 }
 
-class FormInputs extends StatelessWidget {
-  final String input;
-  final TextInputType inputType;
-
-  FormInputs({this.input,this.inputType});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-       keyboardType: inputType,
-      textAlign: TextAlign.start,
-      style: TextStyle(fontSize: 14.0),
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.only(bottom: 0.0, top: 20.0),
-        // isDense: true,
-        hintText: input,
-
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey),
-        ),
-        // border: InputBorder.none,
-      ),
-    );
-  }
-}
