@@ -1,0 +1,152 @@
+class TimePicker extends StatelessWidget {
+  const TimePicker(
+      {Key key, this.labelText, this.selectedTime, this.selectTime})
+      : super(key: key);
+
+  final String labelText;
+
+  final TimeOfDay selectedTime;
+
+  final ValueChanged<TimeOfDay> selectTime;
+
+    Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay picked =
+        await showTimePicker(context: context, initialTime: selectedTime);
+    if (picked != null && picked != selectedTime) selectTime(picked);
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: _InputDropdown(
+         valueText: selectedTime.format(context),
+            valueStyle: TextStyle(fontWeight:FontWeight.bold,fontSize: 16.0),
+            onPressed: () {
+              _selectTime(context);
+            },
+      )
+    );
+  }
+}
+
+
+class _InputDropdown extends StatelessWidget {
+  const _InputDropdown(
+      {Key key,
+      this.child,
+      this.labelText,
+      this.valueText,
+      this.valueStyle,
+      this.onPressed})
+      : super(key: key);
+
+  final String labelText;
+  final String valueText;
+  final TextStyle valueStyle;
+  final VoidCallback onPressed;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return new InkWell(
+      onTap: onPressed,
+      child: new InputDecorator(
+        decoration: new InputDecoration(
+          labelText: labelText,
+        ),
+        baseStyle: valueStyle,
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            new Text(valueText, style: valueStyle),
+            new Icon(Icons.arrow_drop_down,
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.grey.shade700
+                    : Colors.white70),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+-----------------------------------------------------------------------------------------------------
+          Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Flexible(
+                        child: TextFormField(
+                      controller: timeCtl, // add this line.
+                      decoration: InputDecoration(
+                        hintText: 'from',
+                      ),
+                      onTap: () async {
+                        TimeOfDay time = TimeOfDay.now();
+                        FocusScope.of(context).requestFocus(new FocusNode());
+
+                        TimeOfDay picked = await showTimePicker(
+                            context: context, initialTime: time);
+                        if (picked != null && picked != time) {
+                          timeCtl.text = picked.toString(); // add this line.
+                          setState(() {
+                            time = picked;
+                            print(time);
+                          });
+                        }
+                      },
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'cant be empty';
+                        }
+                        return null;
+                      },
+                    )),
+                    SizedBox(width: 15.0, child: Text("-")),
+                    Flexible(child: TextFormField()),
+                  ],
+                ),
+
+-------------------------------------------------------------------------------------------------------------
+class DateTimeForm extends StatefulWidget {
+  @override
+  _DateTimeFormState createState() => _DateTimeFormState();
+}
+
+class _DateTimeFormState extends State<DateTimeForm> {
+  final formKey = GlobalKey<FormState>();
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          BasicTimeField(),
+        ],
+      ),
+    );
+  }
+}
+
+class BasicTimeField extends StatelessWidget {
+  final format = DateFormat("hh:mm a");
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: <Widget>[
+      //  Text('Basic time field (${format.pattern})'),
+      DateTimeField(
+        format: format,
+        onShowPicker: (context, currentValue) async {
+          final time = await showTimePicker(
+            context: context,
+            initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+          );
+          return DateTimeField.convert(time);
+        },
+      ),
+    ]);
+  }
+}
