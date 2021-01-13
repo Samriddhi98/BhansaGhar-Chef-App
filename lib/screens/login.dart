@@ -1,4 +1,7 @@
+import 'package:BhansaGharChef/models/loginModel.dart';
+import 'package:BhansaGharChef/services/authservice.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LogIn extends StatefulWidget {
   @override
@@ -6,8 +9,13 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
- final formKey = GlobalKey<FormState>();
+  LoginModel loginModel;
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _togglevisibility = true;
+
+  TextEditingController username = TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController password = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +45,7 @@ class _LogInState extends State<LogIn> {
             width: deviceSize.width,
             color: Colors.white,
             child: Form(
+              key: _formKey,
               child: Column(
                 children: <Widget>[
                   Card(
@@ -45,9 +54,19 @@ class _LogInState extends State<LogIn> {
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       child: TextFormField(
+                        controller: username,
+                        validator: (name) {
+                          Pattern pattern =
+                              r'^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$';
+                          RegExp regex = new RegExp(pattern);
+                          if (!regex.hasMatch(name))
+                            return 'Invalid username';
+                          else
+                            return null;
+                        },
                         decoration: InputDecoration(
-                          hintText: "Username or email",
-                          prefixIcon: Icon(Icons.mail_outline),
+                          hintText: "Username",
+                          prefixIcon: Icon(Icons.person),
                           border: InputBorder.none,
                         ),
                       )),
@@ -58,6 +77,16 @@ class _LogInState extends State<LogIn> {
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                     child: TextFormField(
+                      validator: (password) {
+                        Pattern pattern =
+                            r'^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{6,}$';
+                        RegExp regex = new RegExp(pattern);
+                        if (!regex.hasMatch(password))
+                          return 'Invalid password';
+                        else
+                          return null;
+                      },
+                      controller: password,
                       decoration: InputDecoration(
                         hintText: "Password",
                         prefixIcon: Icon(Icons.vpn_key),
@@ -103,7 +132,7 @@ class _LogInState extends State<LogIn> {
             height: 40.0,
             width: 350.0,
             child: GestureDetector(
-                          child: Material(
+              child: Material(
                 borderRadius: BorderRadius.circular(20.0),
                 shadowColor: Colors.black87,
                 color: Colors.black,
@@ -115,9 +144,46 @@ class _LogInState extends State<LogIn> {
                           fontWeight: FontWeight.bold,
                         ))),
               ),
-               onTap: () {
-                  Navigator.of(context).pushNamed('/main-screen');
-                },
+              onTap: () {
+                print(username.text);
+                //
+                if (_formKey.currentState.validate()) {
+                  loginModel = LoginModel(
+                    username: username.text,
+                    email: email.text,
+                    password: password.text,
+                  );
+                  AuthService().postUserLogin(loginModel).then((value) {
+                    if (value.statusCode == 200) {
+                      Navigator.pop(context);
+                      Navigator.of(context).pushNamed('/main-screen');
+                    } else if (value.statusCode == 400) {
+                      print("eereafsdfasdfadsf");
+                      print(value.data['error']);
+                      Fluttertoast.showToast(
+                        msg: value.data['error'],
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.grey,
+                        textColor: Colors.white,
+                        fontSize:10.0,
+                      );
+                    }
+                  });
+                } else {
+                  print("not validated");
+                    Fluttertoast.showToast(
+                        msg: 'not validated',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.grey,
+                        textColor: Colors.white,
+                        fontSize:10.0,
+                      );
+                }
+              },
             ),
           ),
           SizedBox(height: 20.0),

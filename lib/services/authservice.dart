@@ -47,7 +47,7 @@ class AuthService {
   }
 
 Future<Response> postUserLogin(LoginModel lm) async {
-    String endPoint = "/api/v1/auth/";
+    String endPoint = "/api/v1/auth/login";
     String url = baseUrl + endPoint;
     List<dynamic> responseData;
     List<RegisterModel> registermodelData;
