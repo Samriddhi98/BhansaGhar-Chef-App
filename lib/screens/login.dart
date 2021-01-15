@@ -2,6 +2,7 @@ import 'package:BhansaGharChef/models/loginModel.dart';
 import 'package:BhansaGharChef/services/authservice.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LogIn extends StatefulWidget {
   @override
@@ -16,6 +17,13 @@ class _LogInState extends State<LogIn> {
   TextEditingController username = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
+
+  saveTopref(String token) async {
+    var preference = await SharedPreferences.getInstance();
+    preference.setString("token" , token);
+    String a = preference.getString("token");
+    print(a);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,63 +136,67 @@ class _LogInState extends State<LogIn> {
             ),
           ),
           SizedBox(height: 30.0),
-          Container(
-            height: 40.0,
-            width: 350.0,
-            child: GestureDetector(
-              child: Material(
-                borderRadius: BorderRadius.circular(20.0),
-                shadowColor: Colors.black87,
-                color: Colors.black,
-                elevation: 7.0,
-                child: Center(
-                    child: Text('LOGIN',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ))),
-              ),
-              onTap: () {
-                print(username.text);
-                //
-                if (_formKey.currentState.validate()) {
-                  loginModel = LoginModel(
-                    username: username.text,
-                    email: email.text,
-                    password: password.text,
-                  );
-                  AuthService().postUserLogin(loginModel).then((value) {
-                    if (value.statusCode == 200) {
-                      Navigator.pop(context);
-                      Navigator.of(context).pushNamed('/main-screen');
-                    } else if (value.statusCode == 400) {
-                      print("eereafsdfasdfadsf");
-                      print(value.data['error']);
-                      Fluttertoast.showToast(
-                        msg: value.data['error'],
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.grey,
-                        textColor: Colors.white,
-                        fontSize:10.0,
-                      );
-                    }
-                  });
-                } else {
-                  print("not validated");
-                    Fluttertoast.showToast(
-                        msg: 'not validated',
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.grey,
-                        textColor: Colors.white,
-                        fontSize:10.0,
-                      );
-                }
-              },
+          GestureDetector(
+                      child: Container(
+              height: 40.0,
+              width: 350.0,
+            
+                child: Material(
+                  borderRadius: BorderRadius.circular(20.0),
+                  shadowColor: Colors.black87,
+                  color: Colors.black,
+                  elevation: 7.0,
+                  child: Center(
+                      child: Text('LOGIN',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ))),
+                ),
+              
+              
             ),
+            onTap: () {
+                  print(username.text);
+                  //
+                  if (_formKey.currentState.validate()) {
+                    loginModel = LoginModel(
+                      username: username.text,
+                      email: email.text,
+                      password: password.text,
+                    );
+                    AuthService().postUserLogin(loginModel).then((value) {
+                      if (value.statusCode == 200) {
+                        saveTopref(value.data['token']);
+                        Navigator.pop(context);
+                        Navigator.of(context).pushNamed('/main-screen');
+                      } else if (value.statusCode == 400) {
+                        print("eereafsdfasdfadsf");
+                        print(value.data['error']);
+                        Fluttertoast.showToast(
+                          msg: value.data['error'],
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.grey,
+                          textColor: Colors.white,
+                          fontSize:10.0,
+                        );
+                      }
+                    });
+                  } else {
+                    print("not validated");
+                      Fluttertoast.showToast(
+                          msg: 'not validated',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.grey,
+                          textColor: Colors.white,
+                          fontSize:10.0,
+                        );
+                  }
+                },
           ),
           SizedBox(height: 20.0),
           Container(

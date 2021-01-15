@@ -3,13 +3,18 @@ import 'dart:io';
 
 import 'package:BhansaGharChef/models/foodModel.dart';
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 
 class FoodService{
    String baseUrl = "https://bhansagharapi.herokuapp.com";
   Dio dio = Dio();
 
+
   
-  Future<Response> postAddFood(FoodModel am) async {
+
+
+  
+  Future<Response> postAddFood(Map<String,dynamic> formData, String token) async {
     String endPoint = "/api/v1/foods";
     String url = baseUrl + endPoint;
     List<dynamic> responseData;
@@ -17,18 +22,23 @@ class FoodService{
     // print(rm.username);
     Response response;
     try {
+     //  String fileName = am.photo.split('/').last;
       // dio.options.headers['Content-Type'] = 'application/json';
+      FormData.fromMap({
+
+      });
       response = await dio.post(url,
           options: Options(
-              headers: {HttpHeaders.contentTypeHeader: 'application/json'}),
+              headers: {HttpHeaders.contentTypeHeader: 'application/json', 
+                        HttpHeaders.authorizationHeader:'Bearer $token',}),
           data: {
-            "name": "${am.name}",
-            "description": "${am.description}",
-            "time": " ${am.time}",
-            "price": " ${am.price}",
-            "category": " ${am.category}",
-            "type": " ${am.type}",
-            "photo": " ${am.photo}"
+            "name": "${formData["name"]}",
+            "description": "${formData["description"]}",
+            "time": " ${formData["time"]}",
+            "price": " ${formData["price"]}",
+            "category": " ${formData["category"]}",
+            "type": " ${formData["type"]}",
+            "photo": "${formData["photo"]}"
           });
 
       if (response.statusCode == 200) {

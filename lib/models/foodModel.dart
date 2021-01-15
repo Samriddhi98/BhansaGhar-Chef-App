@@ -1,15 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
+import 'dart:io';
+
 class FoodModel {
+  File photo;
   String name,
       description,
       type,
       time,
       price,
-      category,
-      photo;
-
+      category;
+  
+ 
   FoodModel(
       {
       @required this.name,
