@@ -33,6 +33,7 @@ class MyType {
 List<MyCategory> selectedcategory = List();
 List<MyType> selectedtype = List();
 
+
 class AddFood extends StatefulWidget {
   @override
   _AddFoodState createState() => _AddFoodState();
@@ -40,6 +41,7 @@ class AddFood extends StatefulWidget {
 
 class _AddFoodState extends State<AddFood> {
   File _image;
+
 
   Future getImage() async {
     File img = File(await ImagePicker()
@@ -79,6 +81,7 @@ class _AddFoodState extends State<AddFood> {
     String endPoint = "/api/v1/foods";
     String url = baseUrl + endPoint;
     final response = await dio.post(url, data: data);
+
     print(response.statusCode);
 
     //dio.options.contentType= Headers.formUrlEncodedContentType;
@@ -153,18 +156,22 @@ class _AddFoodState extends State<AddFood> {
       category = TextEditingController(),
       type = TextEditingController();
 
+
   setTokenValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return String
     token = prefs.getString("token");
     print('add food token$token');
+
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
     setTokenValuesSF();
+
   }
 
   @override
@@ -434,6 +441,7 @@ class _AddFoodState extends State<AddFood> {
             //   color: Colors.amber,
             child: FlatButton.icon(
               onPressed: () {
+
                 _upload(
                     _image,
                     name.text,
@@ -442,6 +450,7 @@ class _AddFoodState extends State<AddFood> {
                     time.text,
                     selectedcategory[0].title,
                     selectedtype[0].title);
+
               },
               /*   onPressed: () async {
                   String fileName = _image.path.split('/').last;
