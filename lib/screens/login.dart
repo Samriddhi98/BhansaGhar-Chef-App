@@ -1,6 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:BhansaGharChef/models/loginModel.dart';
+import 'package:BhansaGharChef/models/registerModel.dart';
 import 'package:BhansaGharChef/services/authservice.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,9 +27,15 @@ class _LogInState extends State<LogIn> {
   saveTopref(String token) async {
     var preference = await SharedPreferences.getInstance();
     preference.setString("token" , token);
-    String a = preference.getString("token");
-    print(a);
+   // String a = preference.getString("token");
+    // print(a);
   }
+
+  Dio dio = new Dio();
+  String baseUrl = "https://bhansagharapi.herokuapp.com";
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +180,8 @@ class _LogInState extends State<LogIn> {
                     AuthService().postUserLogin(loginModel).then((value) {
                       if (value.statusCode == 200) {
                         saveTopref(value.data['token']);
-                        Navigator.pop(context);
+                        
+                      //  Navigator.pop(context);
                         Navigator.of(context).pushNamed('/main-screen');
                       } else if (value.statusCode == 400) {
                         print("eereafsdfasdfadsf");
@@ -183,7 +196,8 @@ class _LogInState extends State<LogIn> {
                           fontSize:10.0,
                         );
                       }
-                    });
+                    }
+                    );
                   } else {
                     print("not validated");
                       Fluttertoast.showToast(
