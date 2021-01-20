@@ -8,64 +8,80 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_parser/http_parser.dart';
 
+//category class
+class MyCategory {
+  String title;
+  bool value;
+  MyCategory(this.title, this.value);
+  @override
+  String toString() {
+    return 'MyClass{title: $title, value: $value}';
+  }
+}
+
+//type class
+class MyType {
+  String title;
+  bool value;
+  MyType(this.title, this.value);
+  @override
+  String toString() {
+    return 'MyClass{title: $title, value: $value}';
+  }
+}
+
+List<MyCategory> selectedcategory = List();
+List<MyType> selectedtype = List();
+
+
 class AddFood extends StatefulWidget {
   @override
   _AddFoodState createState() => _AddFoodState();
 }
 
 class _AddFoodState extends State<AddFood> {
-  String _imagePath;
   File _image;
 
-  // Future getImage() async {
 
-  /*final picker = ImagePicker();
-
-    var _pickedFile = await picker.getImage(
-    source: ImageSource.gallery,
-    imageQuality: 50, // <- Reduce Image quality
-    maxHeight: 500,  // <- reduce the image size
-    maxWidth: 500);
-    */
-  // _image = _pickedFile;
   Future getImage() async {
-    File _image = File(await ImagePicker()
+    File img = File(await ImagePicker()
         .getImage(source: ImageSource.gallery, imageQuality: 50)
         .then((pickedFile) => pickedFile.path));
 
-    _upload(_image);
+    // _upload(_image);
     setState(() {
-      _image = _image;
+      _image = img;
     });
   }
 
-  void _upload(File file) async {
+  void _upload(File file, String name, String price, String description,
+      String category, String type, String time) async {
     String fileName = file.path.split('/').last;
 
     var headers = {
-      'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmZmQ4MjczOGNhMGUxMDAwNDk1YjMzMSIsImlhdCI6MTYxMDc4NzMzMiwiZXhwIjoxNjEzMzc5MzMyfQ.CN9IQzgWDEcOcUpdpHluqyOA0WPc8c2jeZcpeXglhxQ',
+      'authorization': 'Bearer $token',
     };
-    var image = await MultipartFile.fromFile(
-      file.path,
-      filename: fileName,
-      contentType: MediaType('image','jpeg'));
+    print('hello');
+    var image = await MultipartFile.fromFile(file.path,
+        filename: fileName, contentType: MediaType('image', 'jpeg'));
 
     var data = FormData.fromMap({
       "photo": image,
-      "name": "Momo",
-      "price": 20,
-      "description": "aksjfaigfifbe",
-      "category": "veg",
-      "type": "lunch",
-      "time": 60
+      "name": name,
+      "price": price,
+      "description": description,
+      "time": time,
+      "category": category,
+      "type": type,
     });
 
-    Dio dio = new Dio(BaseOptions(headers: headers, contentType: "application/json"));
+    Dio dio =
+        new Dio(BaseOptions(headers: headers, contentType: "application/json"));
     String baseUrl = "https://bhansagharapi.herokuapp.com";
     String endPoint = "/api/v1/foods";
     String url = baseUrl + endPoint;
-    final response = await dio.post(url,
-        data: data);
+    final response = await dio.post(url, data: data);
+
     print(response.statusCode);
 
     //dio.options.contentType= Headers.formUrlEncodedContentType;
@@ -140,18 +156,22 @@ class _AddFoodState extends State<AddFood> {
       category = TextEditingController(),
       type = TextEditingController();
 
-  getTokenValuesSF() async {
+
+  setTokenValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return String
-    var tokenValue = prefs.getString("token");
-    print('add food token$tokenValue');
-    return tokenValue;
+    token = prefs.getString("token");
+    print('add food token$token');
+
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    setTokenValuesSF();
+
   }
 
   @override
@@ -175,6 +195,17 @@ class _AddFoodState extends State<AddFood> {
               onChanged: (bool value) {
                 setState(() {
                   boolValue = value;
+                  if (boolValue) {
+                    if (title == "veg" || title == "nonveg") {
+                      selectedcategory.add(MyCategory(title, boolValue));
+                    } else {
+                      if (title == "breakfast" ||
+                          title == "lunch" ||
+                          title == "dinner") {
+                        selectedtype.add(MyType(title, boolValue));
+                      }
+                    }
+                  }
                 });
               },
             ),
@@ -410,7 +441,16 @@ class _AddFoodState extends State<AddFood> {
             //   color: Colors.amber,
             child: FlatButton.icon(
               onPressed: () {
-                _upload(_image);
+
+                _upload(
+                    _image,
+                    name.text,
+                    price.text,
+                    description.text,
+                    time.text,
+                    selectedcategory[0].title,
+                    selectedtype[0].title);
+
               },
               /*   onPressed: () async {
                   String fileName = _image.path.split('/').last;

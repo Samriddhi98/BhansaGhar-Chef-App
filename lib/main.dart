@@ -1,6 +1,7 @@
 
 import 'package:BhansaGharChef/screens/addfood.dart';
 import 'package:BhansaGharChef/screens/mainscreen.dart';
+import 'package:BhansaGharChef/screens/splashscreen.dart';
 import 'package:flutter/material.dart';
 
 
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
             accentColor: Colors.redAccent,
             //fontFamily: 'Lato',
           ),
-          home: LogIn(),
+          home: SplashScreen(),
           routes: <String, WidgetBuilder>{
             '/sign-up': (BuildContext context) => new SignUp(),
             '/log-in' : (BuildContext context) => new LogIn(),

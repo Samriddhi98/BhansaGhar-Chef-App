@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:BhansaGharChef/models/loginModel.dart';
 import 'package:BhansaGharChef/models/registerModel.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthService {
     String baseUrl = "https://bhansagharapi.herokuapp.com";
@@ -53,7 +57,7 @@ Future<Response> postUserLogin(LoginModel lm) async {
     List<RegisterModel> registermodelData;
     Response response;
     try {
-      // dio.options.headers['Content-Type'] = 'application/json';
+      dio.options.headers['Content-Type'] = 'application/json';
       response = await dio.post(url,
           options: Options(
               headers: {HttpHeaders.contentTypeHeader: 'application/json'}),
@@ -64,6 +68,12 @@ Future<Response> postUserLogin(LoginModel lm) async {
             "password": "${lm.password}",
             
           });
+
+          // var data = json.decode(response.data);
+          // if(data == 'Success'){
+          //   await FlutterSession().set("token", lm.username);
+          
+          // }
 
       if (response.statusCode == 200) {
         // registermodelData =
