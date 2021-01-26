@@ -69,11 +69,7 @@ Future<Response> postUserLogin(LoginModel lm) async {
             
           });
 
-          // var data = json.decode(response.data);
-          // if(data == 'Success'){
-          //   await FlutterSession().set("token", lm.username);
-          
-          // }
+       
 
       if (response.statusCode == 200) {
         // registermodelData =

@@ -195,13 +195,25 @@ class _LogInState extends State<LogIn> {
                           textColor: Colors.white,
                           fontSize:10.0,
                         );
+                      } else {
+                         Fluttertoast.showToast(
+                        //  msg: value.data['error'],
+                        
+                          msg: 'Invalid username or password.Try Again',
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.grey,
+                          textColor: Colors.white,
+                          fontSize:10.0,
+                        ); 
                       }
                     }
                     );
                   } else {
                     print("not validated");
                       Fluttertoast.showToast(
-                          msg: 'not validated',
+                          msg: 'Invalid username or password.Try Agia',
                           toastLength: Toast.LENGTH_SHORT,
                           gravity: ToastGravity.BOTTOM,
                           timeInSecForIosWeb: 1,

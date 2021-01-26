@@ -13,10 +13,10 @@ class MyCategory {
   String title;
   bool value;
   MyCategory(this.title, this.value);
-  @override
-  String toString() {
-    return 'MyClass{title: $title, value: $value}';
-  }
+  //@override
+  // String toString() {
+  //   return 'MyClass{title: $title, value: $value}';
+  // }
 }
 
 //type class
@@ -24,15 +24,14 @@ class MyType {
   String title;
   bool value;
   MyType(this.title, this.value);
-  @override
-  String toString() {
-    return 'MyClass{title: $title, value: $value}';
-  }
+  //@override
+  // String toString() {
+  //   return 'MyClass{title: $title, value: $value}';
+  // }
 }
 
-List<MyCategory> selectedcategory = List();
-List<MyType> selectedtype = List();
-
+MyCategory selectedcategory;
+List<MyType> selectedtype = [];
 
 class AddFood extends StatefulWidget {
   @override
@@ -40,8 +39,14 @@ class AddFood extends StatefulWidget {
 }
 
 class _AddFoodState extends State<AddFood> {
-  File _image;
+  bool brkval = false;
+    bool lunchval = false;
+    bool dinval = false;
 
+    bool vegval = false;
+    bool nonvegval = false;
+
+  File _image;
 
   Future getImage() async {
     File img = File(await ImagePicker()
@@ -54,25 +59,29 @@ class _AddFoodState extends State<AddFood> {
     });
   }
 
-  void _upload(File file, String name, String price, String description,
-      String category, String type, String time) async {
-    String fileName = file.path.split('/').last;
+  // void _upload(FoodModel foodModel, {File file, String name, String price, String description,
+  //     String category, String type, String time}) async {
+
+  void _upload(FoodModel foodModel) async {
+    String fileName = foodModel.photo.path
+        .split('/')
+        .last; //   String fileName = file.path.split('/').last;
 
     var headers = {
       'authorization': 'Bearer $token',
     };
     print('hello');
-    var image = await MultipartFile.fromFile(file.path,
+    var image = await MultipartFile.fromFile(foodModel.photo.path,
         filename: fileName, contentType: MediaType('image', 'jpeg'));
 
     var data = FormData.fromMap({
       "photo": image,
-      "name": name,
-      "price": price,
-      "description": description,
-      "time": time,
-      "category": category,
-      "type": type,
+      "name": foodModel.name,
+      "price": foodModel.price,
+      "description": foodModel.description,
+      "time": foodModel.time,
+      "category": foodModel.category,
+      "type": foodModel.type,
     });
 
     Dio dio =
@@ -80,9 +89,9 @@ class _AddFoodState extends State<AddFood> {
     String baseUrl = "https://bhansagharapi.herokuapp.com";
     String endPoint = "/api/v1/foods";
     String url = baseUrl + endPoint;
-    final response = await dio.post(url, data: data);
+   final response = await dio.post(url, data: data);
 
-    print(response.statusCode);
+    // print(response.statusCode);
 
     //dio.options.contentType= Headers.formUrlEncodedContentType;
     /* dio.post(url,
@@ -156,13 +165,11 @@ class _AddFoodState extends State<AddFood> {
       category = TextEditingController(),
       type = TextEditingController();
 
-
   setTokenValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return String
     token = prefs.getString("token");
     print('add food token$token');
-
   }
 
   @override
@@ -171,42 +178,126 @@ class _AddFoodState extends State<AddFood> {
     super.initState();
 
     setTokenValuesSF();
-
   }
 
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
 
-    bool brkval = false;
-    bool lunchval = false;
-    bool dinval = false;
+    
 
-    bool vegval = false;
-    bool nonvegval = false;
-
-    Widget checkbox(String title, bool boolValue) {
-      return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
+    Widget checkbox(String title, bool isSelected) {
+     // return StatefulBuilder(
+       //   builder: (BuildContext context, StateSetter setCheckboxState) {
+        // bool isSelected = boolValue;
         return Row(
           children: <Widget>[
             Checkbox(
-              value: boolValue,
-              onChanged: (bool value) {
-                setState(() {
-                  boolValue = value;
-                  if (boolValue) {
-                    if (title == "veg" || title == "nonveg") {
-                      selectedcategory.add(MyCategory(title, boolValue));
-                    } else {
-                      if (title == "breakfast" ||
-                          title == "lunch" ||
-                          title == "dinner") {
-                        selectedtype.add(MyType(title, boolValue));
+              value: isSelected,
+              onChanged: (bool valueAfterTap) {
+                // setState(() {
+                //   isSelected = value;
+                // });
+                if (valueAfterTap) {
+                  // if (title == "Veg" || title == "Non Veg") {
+                  //   print('here');
+                  //  // selectedcategory.add(MyCategory(title, boolValue));
+                  // } else {
+                  //   if (title == "BreakFast" ||
+                  //       title == "Lunch" ||
+                  //       title == "Dinner") {
+                  //   print('here');
+
+                  //    // selectedtype.add(MyType(title, boolValue));
+                  //   }
+                  // }
+                  switch (title) {
+                    case "Veg":
+                      {
+                        vegval = true;
+                        selectedcategory = MyCategory('veg',true);
+                        break;
                       }
-                    }
+
+                    case "Non Veg":
+                      {
+                        nonvegval = true;
+                        selectedcategory = MyCategory('non-veg', true);
+
+                        break;
+                      }
+                    case "BreakFast":
+                      {
+                        brkval = true;
+                        selectedtype.add(new MyType('breakfast', true));
+                        break;
+                      }
+
+                    case "Lunch":
+                      {
+                        lunchval = true;
+                        selectedtype.add(new MyType('lunch', true));
+                        break;
+                      }
+
+                    case "Dinner":
+                      {
+                        dinval = true;
+                        selectedtype.add(new MyType('dinner', true));
+                        break;
+                      }
+                    default:
+                      print(title);
                   }
-                });
+                } else {
+                  // if current check box is unselected
+                  switch (title) {
+                    case "Veg":
+                      {
+                        vegval = false;
+                        selectedcategory = null;
+                        break;
+                      }
+
+                    case "Non Veg":
+                      {
+                        nonvegval = false;
+                        selectedcategory = null;
+
+                        break;
+                      }
+                    case "BreakFast":
+                      {
+                        brkval = false;
+                        final toRemove = selectedtype.firstWhere(
+                            (MyType type) => type.title == 'breakfast');
+                        selectedtype.remove(toRemove);
+                        break;
+                      }
+
+                    case "Lunch":
+                      {
+                        lunchval = false;
+                          final toRemove = selectedtype.firstWhere(
+                            (MyType type) => type.title == 'lunch');
+                        selectedtype.remove(toRemove);
+                        break;
+                      }
+
+                    case "Dinner":
+                      {
+                        dinval = false;
+                          final toRemove = selectedtype.firstWhere(
+                            (MyType type) => type.title == 'dinner');
+                        selectedtype.remove(toRemove);
+                        break;
+                      }
+                    default:
+                      print(title);
+                  }
+                }
+                
+                setState(() {});
               },
             ),
             Text(
@@ -216,7 +307,10 @@ class _AddFoodState extends State<AddFood> {
             ),
           ],
         );
-      });
+      
+      
+      
+      //});
     }
 
     return Scaffold(
@@ -441,16 +535,18 @@ class _AddFoodState extends State<AddFood> {
             //   color: Colors.amber,
             child: FlatButton.icon(
               onPressed: () {
-
-                _upload(
-                    _image,
-                    name.text,
-                    price.text,
-                    description.text,
-                    time.text,
-                    selectedcategory[0].title,
-                    selectedtype[0].title);
-
+                print(selectedcategory);
+                print(selectedtype);
+                _upload(FoodModel(
+                    photo: _image,
+                    name: name.text,
+                    price: price.text,
+                    description: description.text,
+                    time: time.text,
+                    category: selectedcategory.title,
+                    type: selectedtype
+                        .map((MyType type) => type.title)
+                        .toList()));
               },
               /*   onPressed: () async {
                   String fileName = _image.path.split('/').last;

@@ -7,10 +7,11 @@ class FoodModel {
   File photo;
   String name,
       description,
-      type,
+      
       time,
       price,
       category;
+      List<String> type=[];
   
  
   FoodModel(

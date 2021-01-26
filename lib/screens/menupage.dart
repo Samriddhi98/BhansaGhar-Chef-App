@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -44,6 +45,31 @@ var _isVisible;
 
   @override
   Widget build(BuildContext context) {
+        Future<bool> _onBackPressed() {
+      return showDialog(
+              context: context,
+              builder: (context) => new AlertDialog(
+                    title: Text('Are you sure?'),
+                    content: Text(
+                      'Do you want to exit the App?',
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text('No'),
+                        onPressed: () {
+                          Navigator.of(context).pop(false);
+                        },
+                      ),
+                      FlatButton(
+                        child: Text('Yes'),
+                        onPressed: () {
+                          SystemNavigator.pop();
+                        },
+                      ),
+                    ],
+                  )) ??
+          false;
+    }
     final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
