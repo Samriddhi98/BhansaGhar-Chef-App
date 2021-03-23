@@ -26,22 +26,24 @@ class _LogInState extends State<LogIn> {
 
   saveTopref(String token) async {
     var preference = await SharedPreferences.getInstance();
-    preference.setString("token" , token);
-   // String a = preference.getString("token");
+    preference.setString("token", token);
+    // String a = preference.getString("token");
     // print(a);
+  }
+
+  saveIdTopref(String id) async {
+    var preference = await SharedPreferences.getInstance();
+    preference.setString("id", id);
   }
 
   Dio dio = new Dio();
   String baseUrl = "https://bhansagharapi.herokuapp.com";
 
-
-
-
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: <Widget>[
           Column(children: <Widget>[
@@ -149,68 +151,83 @@ class _LogInState extends State<LogIn> {
           ),
           SizedBox(height: 30.0),
           GestureDetector(
-                      child: Container(
+            child: Container(
               height: 40.0,
               width: 350.0,
-            
-                child: Material(
-                  borderRadius: BorderRadius.circular(20.0),
-                  shadowColor: Colors.black87,
-                  color: Colors.black,
-                  elevation: 7.0,
-                  child: Center(
-                      child: Text('LOGIN',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ))),
-                ),
-              
-              
+              child: Material(
+                borderRadius: BorderRadius.circular(20.0),
+                shadowColor: Colors.black87,
+                color: Colors.black,
+                elevation: 7.0,
+                child: Center(
+                    child: Text('LOGIN',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ))),
+              ),
             ),
             onTap: () {
-                  print(username.text);
-                  //
-                  if (_formKey.currentState.validate()) {
-                    loginModel = LoginModel(
-                      username: username.text,
-                      email: email.text,
-                      password: password.text,
-                    );
-                    AuthService().postUserLogin(loginModel).then((value) {
-                      if (value.statusCode == 200) {
-                        saveTopref(value.data['token']);
-                        
-                      //  Navigator.pop(context);
-                        Navigator.of(context).pushNamed('/main-screen');
-                      } else if (value.statusCode == 400) {
-                        print("eereafsdfasdfadsf");
-                        print(value.data['error']);
-                        Fluttertoast.showToast(
-                          msg: value.data['error'],
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.grey,
-                          textColor: Colors.white,
-                          fontSize:10.0,
-                        );
-                      }
-                    }
+              print(username.text);
+              //
+              if (_formKey.currentState.validate()) {
+                loginModel = LoginModel(
+                  username: username.text,
+                  email: email.text,
+                  password: password.text,
+                );
+                AuthService().postUserLogin(loginModel).then((value) {
+                  if (value.statusCode == 200) {
+                    print(value.data);
+                    saveTopref(value.data['token']);
+                    // get chef info from api
+                    AuthService()
+                        .getChefDetails(value.data['token'])
+                        .then((value) {
+                      // save chef _id to savedpref
+                      saveIdTopref(value.data.id);
+                    });
+                    Navigator.of(context).pushNamed('/main-screen');
+                    //  Navigator.pop(context);
+                  } else if (value.statusCode == 400) {
+                    print("eereafsdfasdfadsf");
+                    print(value.data['error']);
+                    Fluttertoast.showToast(
+                      msg: value.data['error'],
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.grey,
+                      textColor: Colors.white,
+                      fontSize: 10.0,
                     );
                   } else {
-                    print("not validated");
-                      Fluttertoast.showToast(
-                          msg: 'not validated',
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.grey,
-                          textColor: Colors.white,
-                          fontSize:10.0,
-                        );
+                    Fluttertoast.showToast(
+                      //  msg: value.data['error'],
+
+                      msg: 'Invalid username or password.Try Again',
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.grey,
+                      textColor: Colors.white,
+                      fontSize: 10.0,
+                    );
                   }
-                },
+                });
+              } else {
+                print("not validated");
+                Fluttertoast.showToast(
+                  msg: 'Invalid username or password.Try Agia',
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.grey,
+                  textColor: Colors.white,
+                  fontSize: 10.0,
+                );
+              }
+            },
           ),
           SizedBox(height: 20.0),
           Container(

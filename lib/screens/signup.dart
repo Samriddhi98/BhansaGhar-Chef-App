@@ -28,7 +28,7 @@ class _SignUpState extends State<SignUp> {
 
     bool _togglevisibility = true;
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: <Widget>[
           Center(
@@ -59,7 +59,7 @@ class _SignUpState extends State<SignUp> {
             // color: Colors.blue,
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
-                          child: Form(
+              child: Form(
                 key: _formkey,
                 child: Column(
                   children: <Widget>[
@@ -180,7 +180,7 @@ class _SignUpState extends State<SignUp> {
                         timeInSecForIosWeb: 1,
                         backgroundColor: Colors.grey,
                         textColor: Colors.white,
-                        fontSize:10.0,
+                        fontSize: 10.0,
                       );
                       Navigator.of(context).pushNamed('/main-screen');
                     } else if (value.statusCode == 400) {
@@ -193,7 +193,7 @@ class _SignUpState extends State<SignUp> {
                         timeInSecForIosWeb: 1,
                         backgroundColor: Colors.grey,
                         textColor: Colors.white,
-                        fontSize:14.0,
+                        fontSize: 14.0,
                       );
                     }
                   });
