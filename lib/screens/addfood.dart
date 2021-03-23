@@ -40,11 +40,11 @@ class AddFood extends StatefulWidget {
 
 class _AddFoodState extends State<AddFood> {
   bool brkval = false;
-    bool lunchval = false;
-    bool dinval = false;
+  bool lunchval = false;
+  bool dinval = false;
 
-    bool vegval = false;
-    bool nonvegval = false;
+  bool vegval = false;
+  bool nonvegval = false;
 
   File _image;
 
@@ -62,7 +62,7 @@ class _AddFoodState extends State<AddFood> {
   // void _upload(FoodModel foodModel, {File file, String name, String price, String description,
   //     String category, String type, String time}) async {
 
-  void _upload(FoodModel foodModel) async {
+  Future<Response> _upload(FoodModel foodModel) async {
     String fileName = foodModel.photo.path
         .split('/')
         .last; //   String fileName = file.path.split('/').last;
@@ -84,13 +84,15 @@ class _AddFoodState extends State<AddFood> {
       "type": foodModel.type,
     });
 
+    print(data.fields);
+    print(data.files);
     Dio dio =
         new Dio(BaseOptions(headers: headers, contentType: "application/json"));
     String baseUrl = "https://bhansagharapi.herokuapp.com";
     String endPoint = "/api/v1/foods";
     String url = baseUrl + endPoint;
-   final response = await dio.post(url, data: data);
-
+    final response = await dio.post(url, data: data);
+    return response;
     // print(response.statusCode);
 
     //dio.options.contentType= Headers.formUrlEncodedContentType;
@@ -184,132 +186,128 @@ class _AddFoodState extends State<AddFood> {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
 
-    
-
     Widget checkbox(String title, bool isSelected) {
-     // return StatefulBuilder(
-       //   builder: (BuildContext context, StateSetter setCheckboxState) {
-        // bool isSelected = boolValue;
-        return Row(
-          children: <Widget>[
-            Checkbox(
-              value: isSelected,
-              onChanged: (bool valueAfterTap) {
-                // setState(() {
-                //   isSelected = value;
-                // });
-                if (valueAfterTap) {
-                  // if (title == "Veg" || title == "Non Veg") {
-                  //   print('here');
-                  //  // selectedcategory.add(MyCategory(title, boolValue));
-                  // } else {
-                  //   if (title == "BreakFast" ||
-                  //       title == "Lunch" ||
-                  //       title == "Dinner") {
-                  //   print('here');
+      // return StatefulBuilder(
+      //   builder: (BuildContext context, StateSetter setCheckboxState) {
+      // bool isSelected = boolValue;
+      return Row(
+        children: <Widget>[
+          Checkbox(
+            value: isSelected,
+            onChanged: (bool valueAfterTap) {
+              // setState(() {
+              //   isSelected = value;
+              // });
+              if (valueAfterTap) {
+                // if (title == "Veg" || title == "Non Veg") {
+                //   print('here');
+                //  // selectedcategory.add(MyCategory(title, boolValue));
+                // } else {
+                //   if (title == "BreakFast" ||
+                //       title == "Lunch" ||
+                //       title == "Dinner") {
+                //   print('here');
 
-                  //    // selectedtype.add(MyType(title, boolValue));
-                  //   }
-                  // }
-                  switch (title) {
-                    case "Veg":
-                      {
-                        vegval = true;
-                        selectedcategory = MyCategory('veg',true);
-                        break;
-                      }
+                //    // selectedtype.add(MyType(title, boolValue));
+                //   }
+                // }
+                switch (title) {
+                  case "Veg":
+                    {
+                      vegval = true;
+                      selectedcategory = MyCategory('veg', true);
+                      break;
+                    }
 
-                    case "Non Veg":
-                      {
-                        nonvegval = true;
-                        selectedcategory = MyCategory('non-veg', true);
+                  case "Non Veg":
+                    {
+                      nonvegval = true;
+                      selectedcategory = MyCategory('non-veg', true);
 
-                        break;
-                      }
-                    case "BreakFast":
-                      {
-                        brkval = true;
-                        selectedtype.add(new MyType('breakfast', true));
-                        break;
-                      }
+                      break;
+                    }
+                  case "BreakFast":
+                    {
+                      brkval = true;
+                      selectedtype.add(new MyType('breakfast', true));
+                      break;
+                    }
 
-                    case "Lunch":
-                      {
-                        lunchval = true;
-                        selectedtype.add(new MyType('lunch', true));
-                        break;
-                      }
+                  case "Lunch":
+                    {
+                      lunchval = true;
+                      selectedtype.add(new MyType('lunch', true));
+                      break;
+                    }
 
-                    case "Dinner":
-                      {
-                        dinval = true;
-                        selectedtype.add(new MyType('dinner', true));
-                        break;
-                      }
-                    default:
-                      print(title);
-                  }
-                } else {
-                  // if current check box is unselected
-                  switch (title) {
-                    case "Veg":
-                      {
-                        vegval = false;
-                        selectedcategory = null;
-                        break;
-                      }
-
-                    case "Non Veg":
-                      {
-                        nonvegval = false;
-                        selectedcategory = null;
-
-                        break;
-                      }
-                    case "BreakFast":
-                      {
-                        brkval = false;
-                        final toRemove = selectedtype.firstWhere(
-                            (MyType type) => type.title == 'breakfast');
-                        selectedtype.remove(toRemove);
-                        break;
-                      }
-
-                    case "Lunch":
-                      {
-                        lunchval = false;
-                          final toRemove = selectedtype.firstWhere(
-                            (MyType type) => type.title == 'lunch');
-                        selectedtype.remove(toRemove);
-                        break;
-                      }
-
-                    case "Dinner":
-                      {
-                        dinval = false;
-                          final toRemove = selectedtype.firstWhere(
-                            (MyType type) => type.title == 'dinner');
-                        selectedtype.remove(toRemove);
-                        break;
-                      }
-                    default:
-                      print(title);
-                  }
+                  case "Dinner":
+                    {
+                      dinval = true;
+                      selectedtype.add(new MyType('dinner', true));
+                      break;
+                    }
+                  default:
+                    print(title);
                 }
-                
-                setState(() {});
-              },
-            ),
-            Text(
-              title,
-              style: TextStyle(
-                  color: Colors.yellow[700], fontWeight: FontWeight.bold),
-            ),
-          ],
-        );
-      
-      
-      
+              } else {
+                // if current check box is unselected
+                switch (title) {
+                  case "Veg":
+                    {
+                      vegval = false;
+                      selectedcategory = null;
+                      break;
+                    }
+
+                  case "Non Veg":
+                    {
+                      nonvegval = false;
+                      selectedcategory = null;
+
+                      break;
+                    }
+                  case "BreakFast":
+                    {
+                      brkval = false;
+                      final toRemove = selectedtype.firstWhere(
+                          (MyType type) => type.title == 'breakfast');
+                      selectedtype.remove(toRemove);
+                      break;
+                    }
+
+                  case "Lunch":
+                    {
+                      lunchval = false;
+                      final toRemove = selectedtype
+                          .firstWhere((MyType type) => type.title == 'lunch');
+                      selectedtype.remove(toRemove);
+                      break;
+                    }
+
+                  case "Dinner":
+                    {
+                      dinval = false;
+                      final toRemove = selectedtype
+                          .firstWhere((MyType type) => type.title == 'dinner');
+                      selectedtype.remove(toRemove);
+                      break;
+                    }
+                  default:
+                    print(title);
+                }
+              }
+
+              setState(() {});
+            },
+          ),
+          Text(
+            title,
+            style: TextStyle(
+                color: Colors.yellow[700], fontWeight: FontWeight.bold),
+          ),
+        ],
+      );
+
       //});
     }
 
