@@ -6,7 +6,7 @@ import 'package:BhansaGharChef/models/loginModel.dart';
 import 'package:BhansaGharChef/models/registerModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
+//import 'package:flutter_session/flutter_session.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthService {
