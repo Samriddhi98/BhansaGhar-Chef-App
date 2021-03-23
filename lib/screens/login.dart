@@ -6,7 +6,6 @@ import 'package:BhansaGharChef/models/registerModel.dart';
 import 'package:BhansaGharChef/services/authservice.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_session/flutter_session.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,13 +26,8 @@ class _LogInState extends State<LogIn> {
   saveTopref(String token) async {
     var preference = await SharedPreferences.getInstance();
     preference.setString("token", token);
-    // String a = preference.getString("token");
-    // print(a);
-  }
-
-  saveIdTopref(String id) async {
-    var preference = await SharedPreferences.getInstance();
-    preference.setString("id", id);
+    String a = preference.getString("token");
+    print(a);
   }
 
   Dio dio = new Dio();
@@ -178,17 +172,9 @@ class _LogInState extends State<LogIn> {
                 );
                 AuthService().postUserLogin(loginModel).then((value) {
                   if (value.statusCode == 200) {
-                    print(value.data);
                     saveTopref(value.data['token']);
-                    // get chef info from api
-                    AuthService()
-                        .getChefDetails(value.data['token'])
-                        .then((value) {
-                      // save chef _id to savedpref
-                      saveIdTopref(value.data.id);
-                    });
+                    Navigator.pop(context);
                     Navigator.of(context).pushNamed('/main-screen');
-                    //  Navigator.pop(context);
                   } else if (value.statusCode == 400) {
                     print("eereafsdfasdfadsf");
                     print(value.data['error']);
@@ -201,24 +187,12 @@ class _LogInState extends State<LogIn> {
                       textColor: Colors.white,
                       fontSize: 10.0,
                     );
-                  } else {
-                    Fluttertoast.showToast(
-                      //  msg: value.data['error'],
-
-                      msg: 'Invalid username or password.Try Again',
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.grey,
-                      textColor: Colors.white,
-                      fontSize: 10.0,
-                    );
                   }
                 });
               } else {
                 print("not validated");
                 Fluttertoast.showToast(
-                  msg: 'Invalid username or password.Try Agia',
+                  msg: 'not validated',
                   toastLength: Toast.LENGTH_SHORT,
                   gravity: ToastGravity.BOTTOM,
                   timeInSecForIosWeb: 1,
