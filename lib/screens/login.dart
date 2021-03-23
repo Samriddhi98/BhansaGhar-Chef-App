@@ -23,11 +23,21 @@ class _LogInState extends State<LogIn> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
 
+  String token;
+  String id;
+
   saveTopref(String token) async {
     var preference = await SharedPreferences.getInstance();
     preference.setString("token", token);
     String a = preference.getString("token");
     print(a);
+  }
+
+  saveIdTopref(String id) async {
+    var preference = await SharedPreferences.getInstance();
+    preference.setString("id", id);
+    String chefid = preference.getString("id");
+    print('chef id$chefid');
   }
 
   Dio dio = new Dio();
@@ -173,6 +183,13 @@ class _LogInState extends State<LogIn> {
                 AuthService().postUserLogin(loginModel).then((value) {
                   if (value.statusCode == 200) {
                     saveTopref(value.data['token']);
+
+                    AuthService()
+                        .getChefDetails(value.data['token'])
+                        .then((value) {
+                      print(value.id);
+                      saveIdTopref(value.id);
+                    });
                     Navigator.pop(context);
                     Navigator.of(context).pushNamed('/main-screen');
                   } else if (value.statusCode == 400) {

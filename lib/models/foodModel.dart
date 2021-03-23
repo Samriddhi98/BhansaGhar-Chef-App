@@ -51,8 +51,6 @@ class FoodModel {
 //
 //     final foodModel = foodModelFromJson(jsonString);
 
-import 'dart:convert';
-
 List<FoodModel> foodModelFromJson(String str) =>
     List<FoodModel>.from(json.decode(str).map((x) => FoodModel.fromJson(x)));
 
@@ -60,27 +58,29 @@ String foodModelToJson(List<FoodModel> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class FoodModel {
-  FoodModel({
-    this.name,
-    this.image,
-    this.description,
-    this.time,
-    this.price,
-    this.category,
-    this.type,
-    this.photo,
-  });
+  FoodModel(
+      {this.name,
+      this.image,
+      this.description,
+      this.time,
+      this.price,
+      this.category,
+      this.type,
+      this.photo,
+      this.id});
 
   File photo;
   String image;
   String name;
   String description;
-  String time;
-  String price;
+  int time;
+  int price;
   String category;
   List<String> type;
+  String id;
 
   factory FoodModel.fromJson(Map<String, dynamic> json) => FoodModel(
+        id: json['_id'],
         name: json["name"],
         description: json["description"],
         time: json["time"],
@@ -91,6 +91,7 @@ class FoodModel {
       );
 
   Map<String, dynamic> toJson() => {
+        "_id": id,
         "name": name,
         "description": description,
         "time": time,

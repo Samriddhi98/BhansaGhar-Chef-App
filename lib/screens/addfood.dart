@@ -538,9 +538,9 @@ class _AddFoodState extends State<AddFood> {
                 _upload(FoodModel(
                     photo: _image,
                     name: name.text,
-                    price: price.text,
+                    price: int.parse(price.text),
                     description: description.text,
-                    time: time.text,
+                    time: int.parse(time.text),
                     category: selectedcategory.title,
                     type: selectedtype
                         .map((MyType type) => type.title)

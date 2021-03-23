@@ -14,7 +14,7 @@ class AuthService {
   Dio dio = Dio();
 
   Future<Chef> getChefDetails(String token) async {
-    String endPoint = "/api/v1/auth/me";
+    String endPoint = "/api/v1/auth/me/";
     String url = baseUrl + endPoint;
     Response response;
     Map chefMap;
@@ -32,9 +32,11 @@ class AuthService {
       if (response.statusCode == 200) {
         // registermodelData =
         //     responseData.map((e) => RegisterModel.fromJson(e)).toList();
+        print("object");
         print(response.data);
         // chefMap = jsonDecode(response.data);
-        chef = Chef.fromJson(response.data["data"]);
+        Chef chef = Chef.fromJson(response.data["data"]);
+        print(chef.id);
         return chef;
       }
     } catch (e) {
