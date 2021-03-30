@@ -9,35 +9,35 @@ Chef chefFromJson(String str) => Chef.fromJson(json.decode(str));
 String chefToJson(Chef data) => json.encode(data.toJson());
 
 class Chef {
-    Chef({
-        this.role,
-        this.id,
-        this.name,
-        this.username,
-        this.email,
-        this.contact,
-        this.location,
-        this.account,
-        this.createdAt,
-        this.v,
-    });
+  Chef({
+    this.role,
+    this.id,
+    this.name,
+    this.username,
+    this.email,
+    this.contact,
+    this.location,
+    this.account,
+    this.createdAt,
+    this.v,
+  });
 
-    String role;
-    String id;
-    String name;
-    String username;
-    String email;
-    int contact;
-    String location;
-    int account;
-    DateTime createdAt;
-    int v;
+  String role;
+  String id;
+  String name;
+  String username;
+  String email;
+  int contact;
+  String location;
+  int account;
+  String createdAt;
+  int v;
 
-    Chef get data{
-      return Chef();
-    }
+  Chef get data {
+    return Chef();
+  }
 
-    factory Chef.fromJson(Map<String, dynamic> json) => Chef(
+  factory Chef.fromJson(Map<String, dynamic> json) => Chef(
         role: json["role"],
         id: json["_id"],
         name: json["name"],
@@ -48,9 +48,9 @@ class Chef {
         account: json["account"],
         createdAt: json["createdAt"],
         v: json["-v"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "role": role,
         "_id": id,
         "name": name,
@@ -61,5 +61,5 @@ class Chef {
         "account": account,
         "createdAt": createdAt,
         "-v": v,
-    };
+      };
 }

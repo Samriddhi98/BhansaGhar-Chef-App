@@ -23,11 +23,37 @@ class _LogInState extends State<LogIn> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
 
+  String token;
+  String id;
+
   saveTopref(String token) async {
     var preference = await SharedPreferences.getInstance();
     preference.setString("token", token);
     String a = preference.getString("token");
     print(a);
+  }
+
+  savedetailsTopref(
+      {String id,
+      String name,
+      String username,
+      String location,
+      int account,
+      int contact}) async {
+    var preference = await SharedPreferences.getInstance();
+    preference.setString("cid", id);
+    String chefid = preference.getString("id");
+    preference.setString("name", name);
+    String chefname = preference.getString("name");
+    preference.setString("username", username);
+    String chefusername = preference.getString("username");
+    preference.setString("location", location);
+    String cheflocation = preference.getString("location");
+    preference.setString("account", account.toString());
+    String chefaccount = preference.getString("account");
+    preference.setString("contact", contact.toString());
+    String chefcontact = preference.getString("contact");
+    print('chef id$chefid');
   }
 
   Dio dio = new Dio();
@@ -173,6 +199,19 @@ class _LogInState extends State<LogIn> {
                 AuthService().postUserLogin(loginModel).then((value) {
                   if (value.statusCode == 200) {
                     saveTopref(value.data['token']);
+
+                    AuthService()
+                        .getChefDetails(value.data['token'])
+                        .then((value) {
+                      print(value.id);
+                      savedetailsTopref(
+                          id: value.id,
+                          name: value.name,
+                          username: value.username,
+                          location: value.location,
+                          account: value.account,
+                          contact: value.contact);
+                    });
                     Navigator.pop(context);
                     Navigator.of(context).pushNamed('/main-screen');
                   } else if (value.statusCode == 400) {

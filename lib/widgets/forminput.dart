@@ -5,18 +5,18 @@ class FormInputs extends StatelessWidget {
   final TextInputType inputType;
   final TextEditingController controller;
 
-  FormInputs({this.input,this.inputType,this.controller});
+  FormInputs({this.input, this.inputType, this.controller, initialvalue});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-       keyboardType: inputType,
+      keyboardType: inputType,
       textAlign: TextAlign.start,
       style: TextStyle(fontSize: 14.0),
       controller: controller,
-      validator: (value){
-        if(value.isEmpty){
-          return 'Please enter correct details'; 
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Please enter correct details';
         }
         return null;
       },

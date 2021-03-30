@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:BhansaGharChef/models/foodModel.dart';
+import 'package:BhansaGharChef/services/foodservice.dart';
 import 'package:BhansaGharChef/widgets/forminput.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,10 @@ MyCategory selectedcategory;
 List<MyType> selectedtype = [];
 
 class AddFood extends StatefulWidget {
+  final String navigation;
+  final FoodModel foodData;
+
+  const AddFood({Key key, this.navigation, this.foodData}) : super(key: key);
   @override
   _AddFoodState createState() => _AddFoodState();
 }
@@ -42,9 +47,13 @@ class _AddFoodState extends State<AddFood> {
   bool brkval = false;
   bool lunchval = false;
   bool dinval = false;
-
   bool vegval = false;
   bool nonvegval = false;
+
+  TextEditingController name;
+  TextEditingController price;
+  TextEditingController time;
+  TextEditingController description;
 
   File _image;
 
@@ -157,15 +166,174 @@ class _AddFoodState extends State<AddFood> {
         });
   }
 
+  void checkboxTest(String title) {
+    switch (title) {
+      case "veg":
+        {
+          vegval = true;
+          selectedcategory = MyCategory('veg', true);
+          break;
+        }
+
+      case "non-veg":
+        {
+          nonvegval = true;
+          selectedcategory = MyCategory('non-veg', true);
+
+          break;
+        }
+      case "breakfast":
+        {
+          brkval = true;
+          selectedtype.add(new MyType('breakfast', true));
+          break;
+        }
+
+      case "lunch":
+        {
+          lunchval = true;
+          selectedtype.add(new MyType('lunch', true));
+          break;
+        }
+
+      case "dinner":
+        {
+          dinval = true;
+          selectedtype.add(new MyType('dinner', true));
+          break;
+        }
+      default:
+        print(title);
+    }
+    setState(() {});
+  }
+
   FoodModel foodModel;
   String token;
   GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-  TextEditingController name = TextEditingController(),
-      description = TextEditingController(),
-      time = TextEditingController(),
-      price = TextEditingController(),
-      category = TextEditingController(),
-      type = TextEditingController();
+
+  Widget checkbox(String title, bool isSelected) {
+    return Row(
+      children: <Widget>[
+        Checkbox(
+          value: isSelected,
+          onChanged: (bool valueAfterTap) {
+            // setState(() {
+            //   isSelected = value;
+            // });
+            if (valueAfterTap) {
+              // if (title == "Veg" || title == "Non Veg") {
+              //   print('here');
+              //  // selectedcategory.add(MyCategory(title, boolValue));
+              // } else {
+              //   if (title == "BreakFast" ||
+              //       title == "Lunch" ||
+              //       title == "Dinner") {
+              //   print('here');
+
+              //    // selectedtype.add(MyType(title, boolValue));
+              //   }
+              // }
+
+              switch (title) {
+                case "Veg":
+                  {
+                    vegval = true;
+                    selectedcategory = MyCategory('veg', true);
+                    break;
+                  }
+
+                case "Non Veg":
+                  {
+                    nonvegval = true;
+                    selectedcategory = MyCategory('non-veg', true);
+
+                    break;
+                  }
+                case "BreakFast":
+                  {
+                    brkval = true;
+                    selectedtype.add(new MyType('breakfast', true));
+                    break;
+                  }
+
+                case "Lunch":
+                  {
+                    lunchval = true;
+                    selectedtype.add(new MyType('lunch', true));
+                    break;
+                  }
+
+                case "Dinner":
+                  {
+                    dinval = true;
+                    selectedtype.add(new MyType('dinner', true));
+                    break;
+                  }
+                default:
+                  print(title);
+              }
+            } else {
+              // if current check box is unselected
+              switch (title) {
+                case "Veg":
+                  {
+                    vegval = false;
+                    selectedcategory = null;
+                    break;
+                  }
+
+                case "Non Veg":
+                  {
+                    nonvegval = false;
+                    selectedcategory = null;
+
+                    break;
+                  }
+                case "BreakFast":
+                  {
+                    brkval = false;
+                    final toRemove = selectedtype
+                        .firstWhere((MyType type) => type.title == 'breakfast');
+                    selectedtype.remove(toRemove);
+                    break;
+                  }
+
+                case "Lunch":
+                  {
+                    lunchval = false;
+                    final toRemove = selectedtype
+                        .firstWhere((MyType type) => type.title == 'lunch');
+                    selectedtype.remove(toRemove);
+                    break;
+                  }
+
+                case "Dinner":
+                  {
+                    dinval = false;
+                    final toRemove = selectedtype
+                        .firstWhere((MyType type) => type.title == 'dinner');
+                    selectedtype.remove(toRemove);
+                    break;
+                  }
+                default:
+                  print(title);
+              }
+            }
+
+            setState(() {});
+          },
+        ),
+        Text(
+          title,
+          style:
+              TextStyle(color: Colors.yellow[700], fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+
+    //});
+  }
 
   setTokenValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -178,138 +346,35 @@ class _AddFoodState extends State<AddFood> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    name = widget.navigation == "Edit"
+        ? TextEditingController(text: widget.foodData.name)
+        : TextEditingController();
+    description = widget.navigation == "Edit"
+        ? TextEditingController(text: widget.foodData.description)
+        : TextEditingController();
+    time = widget.navigation == "Edit"
+        ? TextEditingController(text: (widget.foodData.time).toString())
+        : TextEditingController();
+    price = widget.navigation == "Edit"
+        ? TextEditingController(text: (widget.foodData.price).toString())
+        : TextEditingController();
+    //  category = TextEditingController();
+    // type = TextEditingController();
 
     setTokenValuesSF();
+    String category =
+        widget.navigation == 'Edit' ? widget.foodData.category : '';
+    List<String> type = widget.navigation == 'Edit' ? widget.foodData.type : [];
+
+    checkboxTest(category);
+    for (int i = 0; i < type.length; i++) checkboxTest(type[i]);
   }
 
   @override
   Widget build(BuildContext context) {
+    // final FoodModel foodData = ModalRoute.of(context).settings.;
+
     final deviceSize = MediaQuery.of(context).size;
-
-    Widget checkbox(String title, bool isSelected) {
-      // return StatefulBuilder(
-      //   builder: (BuildContext context, StateSetter setCheckboxState) {
-      // bool isSelected = boolValue;
-      return Row(
-        children: <Widget>[
-          Checkbox(
-            value: isSelected,
-            onChanged: (bool valueAfterTap) {
-              // setState(() {
-              //   isSelected = value;
-              // });
-              if (valueAfterTap) {
-                // if (title == "Veg" || title == "Non Veg") {
-                //   print('here');
-                //  // selectedcategory.add(MyCategory(title, boolValue));
-                // } else {
-                //   if (title == "BreakFast" ||
-                //       title == "Lunch" ||
-                //       title == "Dinner") {
-                //   print('here');
-
-                //    // selectedtype.add(MyType(title, boolValue));
-                //   }
-                // }
-                switch (title) {
-                  case "Veg":
-                    {
-                      vegval = true;
-                      selectedcategory = MyCategory('veg', true);
-                      break;
-                    }
-
-                  case "Non Veg":
-                    {
-                      nonvegval = true;
-                      selectedcategory = MyCategory('non-veg', true);
-
-                      break;
-                    }
-                  case "BreakFast":
-                    {
-                      brkval = true;
-                      selectedtype.add(new MyType('breakfast', true));
-                      break;
-                    }
-
-                  case "Lunch":
-                    {
-                      lunchval = true;
-                      selectedtype.add(new MyType('lunch', true));
-                      break;
-                    }
-
-                  case "Dinner":
-                    {
-                      dinval = true;
-                      selectedtype.add(new MyType('dinner', true));
-                      break;
-                    }
-                  default:
-                    print(title);
-                }
-              } else {
-                // if current check box is unselected
-                switch (title) {
-                  case "Veg":
-                    {
-                      vegval = false;
-                      selectedcategory = null;
-                      break;
-                    }
-
-                  case "Non Veg":
-                    {
-                      nonvegval = false;
-                      selectedcategory = null;
-
-                      break;
-                    }
-                  case "BreakFast":
-                    {
-                      brkval = false;
-                      final toRemove = selectedtype.firstWhere(
-                          (MyType type) => type.title == 'breakfast');
-                      selectedtype.remove(toRemove);
-                      break;
-                    }
-
-                  case "Lunch":
-                    {
-                      lunchval = false;
-                      final toRemove = selectedtype
-                          .firstWhere((MyType type) => type.title == 'lunch');
-                      selectedtype.remove(toRemove);
-                      break;
-                    }
-
-                  case "Dinner":
-                    {
-                      dinval = false;
-                      final toRemove = selectedtype
-                          .firstWhere((MyType type) => type.title == 'dinner');
-                      selectedtype.remove(toRemove);
-                      break;
-                    }
-                  default:
-                    print(title);
-                }
-              }
-
-              setState(() {});
-            },
-          ),
-          Text(
-            title,
-            style: TextStyle(
-                color: Colors.yellow[700], fontWeight: FontWeight.bold),
-          ),
-        ],
-      );
-
-      //});
-    }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -357,42 +422,45 @@ class _AddFoodState extends State<AddFood> {
                 ),
               ),
               Container(
-                  margin: EdgeInsets.only(top: 10.0),
-                  width: 165.0,
-                  height: 200,
-                  //   color: Colors.yellowAccent,
-                  child: GestureDetector(
-                    onTap: () {
-                      _showPicker(context);
-                      //_choose();
-                    },
-                    child: CircleAvatar(
-                      radius: 55,
-                      backgroundColor: Color(0xffFDCF09),
-                      child: _image != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: Image.file(
-                                _image,
-                                width: 140,
-                                height: 200,
-                                fit: BoxFit.cover,
-                              ),
-                            )
-                          : Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(50)),
+                margin: EdgeInsets.only(top: 10.0),
+                width: 165.0,
+                height: 200,
+                //   color: Colors.yellowAccent,
+                child: GestureDetector(
+                  onTap: () {
+                    _showPicker(context);
+                    //_choose();
+                  },
+                  child: CircleAvatar(
+                    radius: 55,
+                    backgroundColor: Color(0xffFDCF09),
+                    child: _image != null //|| widget.foodData.photo != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Image.file(
+                              widget.navigation == 'Edit'
+                                  ? widget.foodData.photo
+                                  : _image,
                               width: 140,
                               height: 200,
-                              child: Icon(
-                                Icons.camera_alt,
-                                color: Colors.grey[800],
-                              ),
+                              fit: BoxFit.cover,
                             ),
-                    ),
+                          )
+                        : Container(
+                            decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(50)),
+                            width: 140,
+                            height: 200,
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                  ),
+                ),
 
-                    /* Stack(
+                /* Stack(
                   children: <Widget>[
                     Container(
                       margin: EdgeInsets.only(top: 10.0),
@@ -443,7 +511,7 @@ class _AddFoodState extends State<AddFood> {
                         ))
                   ],
                 ), */
-                  ))
+              )
             ],
           ),
 
@@ -535,16 +603,26 @@ class _AddFoodState extends State<AddFood> {
               onPressed: () {
                 print(selectedcategory);
                 print(selectedtype);
-                _upload(FoodModel(
+                FoodService().addFood(FoodModel(
                     photo: _image,
                     name: name.text,
-                    price: price.text,
+                    price: int.parse(price.text),
                     description: description.text,
-                    time: time.text,
+                    time: int.parse(time.text),
                     category: selectedcategory.title,
                     type: selectedtype
                         .map((MyType type) => type.title)
                         .toList()));
+                // _upload(FoodModel(
+                //     photo: _image,
+                //     name: name.text,
+                //     price: int.parse(price.text),
+                //     description: description.text,
+                //     time: int.parse(time.text),
+                //     category: selectedcategory.title,
+                //     type: selectedtype
+                //         .map((MyType type) => type.title)
+                //         .toList()));
               },
               /*   onPressed: () async {
                   String fileName = _image.path.split('/').last;

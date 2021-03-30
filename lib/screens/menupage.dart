@@ -1,4 +1,5 @@
 import 'package:BhansaGharChef/models/foodModel.dart';
+import 'package:BhansaGharChef/screens/addfood.dart';
 import 'package:BhansaGharChef/services/foodservice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -65,13 +66,9 @@ class _MenuPageState extends State<MenuPage> {
     });
   }
 
-  /* Future  getFoodDetails()async  {
-      List<FoodModel> foodList = await 
-    } */
-
   Widget foodWidget() {
     return FutureBuilder(
-      future: FoodService().getFoodDetails(id),
+      future: FoodService().getFoodDetails(),
       builder: (context, foodSnap) {
         if ( // foodSnap.connectionState == ConnectionState.none &&
             foodSnap.data == null) {
@@ -79,7 +76,8 @@ class _MenuPageState extends State<MenuPage> {
           return Container();
         } else {
           return ListView.builder(
-            itemCount: foodSnap.data.length(),
+            controller: _hideButtonController,
+            itemCount: foodSnap.data.length,
             itemBuilder: (context, index) {
               final deviceSize = MediaQuery.of(context).size;
               FoodModel foodItem = foodSnap.data[index];
@@ -105,7 +103,8 @@ class _MenuPageState extends State<MenuPage> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(55.0),
-                        child: Image.network(foodItem.image),
+                        child: Image.network(
+                            'http://bhansagharapi.herokuapp.com/uploads/${foodItem.image}'),
                       )
                       //  fit: BoxFit.cover,
 
@@ -133,7 +132,7 @@ class _MenuPageState extends State<MenuPage> {
                                     fontSize: 20.0),
                               ),
                               Text(
-                                foodItem.price,
+                                foodItem.price.toString(),
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18.0),
@@ -157,10 +156,32 @@ class _MenuPageState extends State<MenuPage> {
                                 child: Icon(
                                   Icons.edit,
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => AddFood(
+                                            navigation: 'Edit',
+                                            foodData: FoodModel(
+                                                name: foodItem.name,
+                                                description:
+                                                    foodItem.description,
+                                                price: foodItem.price,
+                                                time: foodItem.time,
+                                                category: foodItem.category,
+                                                type: foodItem.type,
+                                                photo: foodItem.photo),
+                                          )));
+                                  // Navigator.of(context).pushNamed('/add-food',
+                                  //     arguments:
+                                  //         FoodModel(name: foodItem.name),
+                                  //         navigation: Text('Edit'));
+                                },
                               ),
                               SizedBox(width: 5),
-                              InkWell(onTap: () {}, child: Icon(Icons.delete)),
+                              InkWell(
+                                  onTap: () {
+                                    FoodService().deleteSingleFood(foodItem.id);
+                                  },
+                                  child: Icon(Icons.delete)),
                             ],
                           ),
                         ]),
@@ -205,137 +226,39 @@ class _MenuPageState extends State<MenuPage> {
     }
 
     // final deviceSize = MediaQuery.of(context).size;
-    return Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        /*  floatingActionButton: FloatingActionButton(
-              child: Icon(Icons.add),
-              backgroundColor: Colors.yellow[700],
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+          /*  floatingActionButton: FloatingActionButton(
+                child: Icon(Icons.add),
+                backgroundColor: Colors.yellow[700],
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/add-food');
+                },
+              ), */
+          floatingActionButton: new Visibility(
+            visible: _isVisible,
+            child: new FloatingActionButton(
               onPressed: () {
                 Navigator.of(context).pushNamed('/add-food');
               },
-            ), */
-        floatingActionButton: new Visibility(
-          visible: _isVisible,
-          child: new FloatingActionButton(
-            onPressed: () {
-              Navigator.of(context).pushNamed('/add-food');
-            },
-            backgroundColor: Colors.yellow[700],
-            child: new Icon(Icons.add),
-          ),
-        ),
-        appBar: AppBar(
-          title: Text(
-            'My Menu',
-            style: TextStyle(
-              color: Colors.black,
+              backgroundColor: Colors.yellow[700],
+              child: new Icon(Icons.add),
             ),
           ),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 0.0,
-        ),
-        body: foodWidget()
-        //     Center(
-        //   child: Text('Start Creating Your menu'),
-        // )
-
-        /*  ListView.builder(
-              controller: _hideButtonController,
-                itemCount: 4,
-                itemBuilder: (ctx, i) => Card(
-                      elevation: 5.0,
-                      child: Stack(children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.all(10.0),
-                          height: 130.0,
-                          width: deviceSize.width,
-                          //  color: Colors.red
-                        ),
-                        Positioned(
-                          left: 10.0,
-                          top: 10.0,
-                          bottom: 10.0,
-                          child: Container(
-                            margin: EdgeInsets.all(10.0),
-                            height: 130.0,
-                            width: 110.0,
-                            //   width:deviceSize.width/3,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(55.0),
-                              //  color: Colors.blue
-                            ),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(55.0),
-                                child: Image.asset(
-                                  'assets/images/bara.jpg',
-                                  fit: BoxFit.cover,
-                                )),
-                          ),
-                        ),
-                        Positioned(
-                          left: 140.0,
-                          top: 10.0,
-                          child: Container(
-                            padding: EdgeInsets.all(5.0),
-                            height: 130.0,
-                            width: 210.0,
-                            //  color: Colors.yellow,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        'Bara',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20.0),
-                                      ),
-                                      Text(
-                                        'Rs. 50',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18.0),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(height: 7.0),
-                                  Container(
-                                    height: 65.0,
-                                    //  color: Colors.blue,
-                                    child: SingleChildScrollView(
-                                      scrollDirection: Axis.vertical,
-                                      child: Text(
-                                          'Plain bara made with maas comes with tomato chatney.'),
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: <Widget>[
-                                      InkWell(
-                                        child: Icon(
-                                          Icons.edit,
-                                        ),
-                                        onTap: () {},
-                                      ),
-                                      SizedBox(width:5),
-                                      InkWell(
-                                          onTap: () {}, 
-                                          child: Icon(
-                                            Icons.delete
-                                            )
-                                            ),
-                                    ],
-                                  ),
-                                ]),
-                          ),
-                        )
-                      ]), */
-        );
+          appBar: AppBar(
+            title: Text(
+              'My Menu',
+              style: TextStyle(
+                color: Colors.black,
+              ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.white,
+            elevation: 0.0,
+          ),
+          body: foodWidget()),
+    );
   }
 }
