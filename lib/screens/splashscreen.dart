@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return String
     token = prefs.getString("token");
-    print('add food token$token');
+    // print('add food token$token');
   }
 
   @override

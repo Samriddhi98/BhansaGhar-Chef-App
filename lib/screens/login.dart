@@ -33,10 +33,26 @@ class _LogInState extends State<LogIn> {
     print(a);
   }
 
-  saveIdTopref(String id) async {
+  savedetailsTopref(
+      {String id,
+      String name,
+      String username,
+      String location,
+      int account,
+      int contact}) async {
     var preference = await SharedPreferences.getInstance();
-    preference.setString("id", id);
+    preference.setString("cid", id);
     String chefid = preference.getString("id");
+    preference.setString("name", name);
+    String chefname = preference.getString("name");
+    preference.setString("username", username);
+    String chefusername = preference.getString("username");
+    preference.setString("location", location);
+    String cheflocation = preference.getString("location");
+    preference.setString("account", account.toString());
+    String chefaccount = preference.getString("account");
+    preference.setString("contact", contact.toString());
+    String chefcontact = preference.getString("contact");
     print('chef id$chefid');
   }
 
@@ -188,7 +204,13 @@ class _LogInState extends State<LogIn> {
                         .getChefDetails(value.data['token'])
                         .then((value) {
                       print(value.id);
-                      saveIdTopref(value.id);
+                      savedetailsTopref(
+                          id: value.id,
+                          name: value.name,
+                          username: value.username,
+                          location: value.location,
+                          account: value.account,
+                          contact: value.contact);
                     });
                     Navigator.pop(context);
                     Navigator.of(context).pushNamed('/main-screen');

@@ -1,4 +1,5 @@
 import 'package:BhansaGharChef/models/foodModel.dart';
+import 'package:BhansaGharChef/screens/addfood.dart';
 import 'package:BhansaGharChef/services/foodservice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -155,7 +156,25 @@ class _MenuPageState extends State<MenuPage> {
                                 child: Icon(
                                   Icons.edit,
                                 ),
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => AddFood(
+                                            navigation: 'Edit',
+                                            foodData: FoodModel(
+                                                name: foodItem.name,
+                                                description:
+                                                    foodItem.description,
+                                                price: foodItem.price,
+                                                time: foodItem.time,
+                                                category: foodItem.category,
+                                                type: foodItem.type,
+                                                photo: foodItem.photo),
+                                          )));
+                                  // Navigator.of(context).pushNamed('/add-food',
+                                  //     arguments:
+                                  //         FoodModel(name: foodItem.name),
+                                  //         navigation: Text('Edit'));
+                                },
                               ),
                               SizedBox(width: 5),
                               InkWell(

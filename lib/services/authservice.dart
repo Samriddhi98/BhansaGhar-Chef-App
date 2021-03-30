@@ -1,19 +1,28 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:BhansaGharChef/models/chefModel.dart';
 import 'package:BhansaGharChef/models/loginModel.dart';
 import 'package:BhansaGharChef/models/registerModel.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 //import 'package:flutter_session/flutter_session.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
+  String token;
+
+  Future<void> setTokenValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Return String
+    this.token = prefs.getString("token");
+    print('chef ko token $token');
+  }
+
   String baseUrl = "https://bhansagharapi.herokuapp.com";
   Dio dio = Dio();
 
   Future<Chef> getChefDetails(String token) async {
+    setTokenValuesSF();
     String endPoint = "/api/v1/auth/me/";
     String url = baseUrl + endPoint;
     Response response;
@@ -21,6 +30,7 @@ class AuthService {
     var chef;
     try {
       // dio.options.headers['Content-Type'] = 'application/json';
+      print(token);
       response = await dio.get(
         url,
         options: Options(headers: {

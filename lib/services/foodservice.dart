@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:BhansaGharChef/models/foodModel.dart';
+import 'package:BhansaGharChef/screens/addfood.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_parser/http_parser.dart';
@@ -163,7 +164,7 @@ class FoodService {
     return response;
   }
 
-  Future<Response> _upload(FoodModel foodModel) async {
+  Future<Response> addFood(FoodModel foodModel) async {
     String fileName = foodModel.photo.path
         .split('/')
         .last; //   String fileName = file.path.split('/').last;
@@ -187,12 +188,13 @@ class FoodService {
 
     print(data.fields);
     print(data.files);
-    Dio dio =
-        new Dio(BaseOptions(headers: headers, contentType: "application/json"));
+    Dio dio = new Dio();
     String baseUrl = "https://bhansagharapi.herokuapp.com";
     String endPoint = "/api/v1/foods";
     String url = baseUrl + endPoint;
-    final response = await dio.post(url, data: data);
+    final response = await dio.post(url,
+        data: data,
+        options: Options(headers: headers, contentType: "application/json"));
     return response;
     // print(response.statusCode);
 
