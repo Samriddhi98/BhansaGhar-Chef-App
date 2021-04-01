@@ -35,39 +35,39 @@ class _SchedulePageState extends State<SchedulePage> {
                 Container(
                   height: 80,
                   width: deviceSize.width,
-                  child: ScheduleCard(day: 'Sun'),
+                  child: ScheduleCard(day: 'Sunday'),
                 ),
 
-                /*    Container(
+                   Container(
                   height: 80,
                   width: deviceSize.width,
-                  child: ScheduleCard(),
+                  child: ScheduleCard(day: 'Monday'),
               ),
               Container(
                   height: 80,
                   width: deviceSize.width,
-                  child: ScheduleCard(),
+                  child: ScheduleCard(day: 'Tuesday'),
               ),
               Container(
                   height: 80,
                   width: deviceSize.width,
-                  child: ScheduleCard(),
+                  child: ScheduleCard(day: 'Wednesday'),
               ),
               Container(
                   height: 80,
                   width: deviceSize.width,
-                  child: ScheduleCard(),
+                  child: ScheduleCard(day: 'Thursday'),
               ),
               Container(
                   height: 80,
                   width: deviceSize.width,
-                  child: ScheduleCard(),
+                  child: ScheduleCard(day: 'Friday'),
               ),
               Container(
                   height: 80,
                   width: deviceSize.width,
-                  child: ScheduleCard(),
-              ), */
+                  child: ScheduleCard(day: 'Saturday'),
+              ), 
               ],
             ),
           ), 

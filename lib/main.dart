@@ -1,5 +1,6 @@
 import 'package:BhansaGharChef/screens/addfood.dart';
 import 'package:BhansaGharChef/screens/mainscreen.dart';
+import 'package:BhansaGharChef/screens/notification.dart';
 import 'package:BhansaGharChef/screens/splashscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,9 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.redAccent,
         //fontFamily: 'Lato',
       ),
-      home: SplashScreen(),
+      home: //NoticePage(),
+          SplashScreen(),
+      debugShowCheckedModeBanner: false,
       routes: <String, WidgetBuilder>{
         '/sign-up': (BuildContext context) => new SignUp(),
         '/log-in': (BuildContext context) => new LogIn(),
