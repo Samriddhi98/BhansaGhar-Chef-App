@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "529234959207",
+    "firebase_url": "https://bhansaghar-ad78c.firebaseio.com",
+    "project_id": "bhansaghar-ad78c",
+    "storage_bucket": "bhansaghar-ad78c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529234959207:android:85f947f69373eab0cbedc2",
+        "android_client_info": {
+          "package_name": "com.example.BhansaGharChef"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "529234959207-74f2mj3bg67q06u0kd7kfiosbp72tl7r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZL2-bW1J-FmHQHR55beh1GAzJHS9MUXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "529234959207-74f2mj3bg67q06u0kd7kfiosbp72tl7r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

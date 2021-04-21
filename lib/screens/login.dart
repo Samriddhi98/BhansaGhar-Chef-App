@@ -3,8 +3,11 @@ import 'dart:io';
 
 import 'package:BhansaGharChef/models/loginModel.dart';
 import 'package:BhansaGharChef/models/registerModel.dart';
+import 'package:BhansaGharChef/push_notification.dart';
 import 'package:BhansaGharChef/services/authservice.dart';
+import 'package:BhansaGharChef/widgets/messagewidget.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,6 +29,24 @@ class _LogInState extends State<LogIn> {
   String token;
   String id;
 
+  //firebase messaging
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  // bool _initialized = false;
+
+  // Future<void> init() async {
+  //   if (!_initialized) {
+  //     // For iOS request permission first.
+  //     _firebaseMessaging.requestNotificationPermissions();
+  //     _firebaseMessaging.configure();
+
+  //     // For testing purposes print the Firebase Messaging token
+  //     String token = await _firebaseMessaging.getToken();
+  //     print("FirebaseMessaging token: $token");
+
+  //     _initialized = true;
+  //   }
+  // }
+
   saveTopref(String token) async {
     var preference = await SharedPreferences.getInstance();
     preference.setString("token", token);
@@ -39,10 +60,12 @@ class _LogInState extends State<LogIn> {
       String username,
       String location,
       int account,
-      int contact}) async {
+      int contact,
+      String email,
+      bool verified}) async {
     var preference = await SharedPreferences.getInstance();
     preference.setString("cid", id);
-    String chefid = preference.getString("id");
+    String chefid = preference.getString("cid");
     preference.setString("name", name);
     String chefname = preference.getString("name");
     preference.setString("username", username);
@@ -53,11 +76,19 @@ class _LogInState extends State<LogIn> {
     String chefaccount = preference.getString("account");
     preference.setString("contact", contact.toString());
     String chefcontact = preference.getString("contact");
-    print('chef id$chefid');
+    preference.setString("email", email);
+    preference.setBool("verified", verified);
+    bool chefverify = preference.getBool("verified");
+    print('chef verified value $chefverify');
   }
 
-  Dio dio = new Dio();
-  String baseUrl = "https://bhansagharapi.herokuapp.com";
+  //  @override
+  // void initState() {
+  //   super.initState();
+  //   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+  //   _firebaseMessaging.getToken().then((token) => print('fcm token$token'));
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +96,11 @@ class _LogInState extends State<LogIn> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Column(
+        //  mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Column(children: <Widget>[
             Container(
-              margin: EdgeInsets.only(top: 100.0),
+              margin: EdgeInsets.only(top: 150.0),
               width: 100.0,
               height: 50.0,
               //   color: Colors.amber,
@@ -102,7 +134,7 @@ class _LogInState extends State<LogIn> {
                               r'^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$';
                           RegExp regex = new RegExp(pattern);
                           if (!regex.hasMatch(name))
-                            return 'Invalid username';
+                            return '    Invalid username';
                           else
                             return null;
                         },
@@ -124,7 +156,7 @@ class _LogInState extends State<LogIn> {
                             r'^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{6,}$';
                         RegExp regex = new RegExp(pattern);
                         if (!regex.hasMatch(password))
-                          return 'Invalid password';
+                          return '     Invalid password';
                         else
                           return null;
                       },
@@ -155,20 +187,20 @@ class _LogInState extends State<LogIn> {
           //   SizedBox(
           //  height: 5.0,
           // ),
-          Container(
-            padding: EdgeInsets.only(top: 15.0, right: 20.0),
-            alignment: Alignment(1.0, 0.0),
-            // color: Colors.blue,
-            child: InkWell(
-              child: Text(
-                'Forgot Password',
-                style: TextStyle(
-                    color: Colors.yellow[700],
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline),
-              ),
-            ),
-          ),
+          // Container(
+          //   padding: EdgeInsets.only(top: 15.0, right: 20.0),
+          //   alignment: Alignment(1.0, 0.0),
+          //   // color: Colors.blue,
+          //   child: InkWell(
+          //     child: Text(
+          //       'Forgot Password',
+          //       style: TextStyle(
+          //           color: Colors.yellow[700],
+          //           fontWeight: FontWeight.bold,
+          //           decoration: TextDecoration.underline),
+          //     ),
+          //   ),
+          // ),
           SizedBox(height: 30.0),
           GestureDetector(
             child: Container(
@@ -203,18 +235,23 @@ class _LogInState extends State<LogIn> {
                     AuthService()
                         .getChefDetails(value.data['token'])
                         .then((value) {
-                      print(value.id);
+                      print('chef $value');
+                      print('chef ko verified status${value.verified}');
                       savedetailsTopref(
                           id: value.id,
                           name: value.name,
                           username: value.username,
                           location: value.location,
                           account: value.account,
-                          contact: value.contact);
+                          verified: value.verified,
+                          contact: value.contact,
+                          email: value.email);
+                      // add verified
                     });
                     Navigator.pop(context);
                     Navigator.of(context).pushNamed('/main-screen');
-                  } else if (value.statusCode == 400) {
+                  } else {
+                    //(value.statusCode == 400) {
                     print("eereafsdfasdfadsf");
                     print(value.data['error']);
                     Fluttertoast.showToast(
@@ -224,7 +261,7 @@ class _LogInState extends State<LogIn> {
                       timeInSecForIosWeb: 1,
                       backgroundColor: Colors.grey,
                       textColor: Colors.white,
-                      fontSize: 10.0,
+                      fontSize: 16.0,
                     );
                   }
                 });
@@ -243,36 +280,36 @@ class _LogInState extends State<LogIn> {
             },
           ),
           SizedBox(height: 20.0),
-          Container(
-            height: 40.0,
-            width: 350.0,
-            color: Colors.transparent,
-            child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.black,
-                      style: BorderStyle.solid,
-                      width: 1.0,
-                    ),
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(20.0)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Center(
-                      child:
-                          ImageIcon(AssetImage('assets/images/facebook.png')),
-                    ),
-                    SizedBox(width: 10.0),
-                    Center(
-                      child: Text(
-                        'Log in with facebook',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    )
-                  ],
-                )),
-          ),
+          // Container(
+          //   height: 40.0,
+          //   width: 350.0,
+          //   color: Colors.transparent,
+          //   child: Container(
+          //       decoration: BoxDecoration(
+          //           border: Border.all(
+          //             color: Colors.black,
+          //             style: BorderStyle.solid,
+          //             width: 1.0,
+          //           ),
+          //           color: Colors.transparent,
+          //           borderRadius: BorderRadius.circular(20.0)),
+          //       child: Row(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: <Widget>[
+          //           Center(
+          //             child:
+          //                 ImageIcon(AssetImage('assets/images/facebook.png')),
+          //           ),
+          //           SizedBox(width: 10.0),
+          //           Center(
+          //             child: Text(
+          //               'Log in with facebook',
+          //               style: TextStyle(fontWeight: FontWeight.bold),
+          //             ),
+          //           )
+          //         ],
+          //       )),
+          // ),
           SizedBox(height: 15.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

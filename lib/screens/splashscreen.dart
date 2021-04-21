@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:BhansaGharChef/screens/login.dart';
 import 'package:BhansaGharChef/screens/mainscreen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,6 +13,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   String token;
+  String fcm;
 
   setTokenValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -20,10 +22,28 @@ class _SplashScreenState extends State<SplashScreen> {
     // print('add food token$token');
   }
 
+  setfcmTokenValuesSF(String fcmToken) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Return String
+    prefs.setString("fcmtoken", fcmToken);
+    fcm = prefs.getString("fcmtoken");
+    print('fcm in splash screen:$fcm');
+  }
+
   @override
   void initState() {
     super.initState();
     setTokenValuesSF();
+
+    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+    String
+        fcmToken; // _firebaseMessaging.getToken().then((token) => print('fcm token$token'));
+
+    _firebaseMessaging.getToken().then((token) {
+      setfcmTokenValuesSF(token);
+    });
+
     Timer(
         Duration(seconds: 3),
         () => token == null

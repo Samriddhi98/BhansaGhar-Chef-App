@@ -5,12 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SignUp extends StatefulWidget {
+class EditChefDetails extends StatefulWidget {
+  final RegisterModel chefData;
+
+  const EditChefDetails({
+    Key key,
+    this.chefData,
+  }) : super(key: key);
   @override
-  _SignUpState createState() => _SignUpState();
+  _EditChefDetailsState createState() => _EditChefDetailsState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _EditChefDetailsState extends State<EditChefDetails> {
   RegisterModel registerModel;
   GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
@@ -36,8 +42,7 @@ class _SignUpState extends State<SignUp> {
       String username,
       String location,
       int account,
-      int contact,
-      bool verified}) async {
+      int contact}) async {
     var preference = await SharedPreferences.getInstance();
     preference.setString("cid", id);
     String chefid = preference.getString("cid");
@@ -51,40 +56,26 @@ class _SignUpState extends State<SignUp> {
     String chefaccount = preference.getString("account");
     preference.setString("contact", contact.toString());
     String chefcontact = preference.getString("contact");
-    preference.setBool("verified", verified);
     print('chef id$chefid');
   }
-
-  bool _togglevisibility = true;
 
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
 
+    bool _togglevisibility = true;
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Edit Chef Details',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+      ),
       resizeToAvoidBottomInset: false,
       body: Column(
         children: <Widget>[
-          Center(
-            child: Container(
-              margin: EdgeInsets.only(top: 50.0),
-              width: 100.0,
-              height: 50.0,
-              //   color: Colors.amber,
-              child: FittedBox(
-                  child: Image.asset(
-                'assets/images/logo.PNG',
-                height: 50.0,
-                width: 100.0,
-              )),
-            ),
-          ),
-          Text('Food that feels like home'),
-          SizedBox(height: 10.0),
-          Text(
-            'SignUp as Chef and Start your food journey',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-          ),
           Container(
             margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
             padding: EdgeInsets.only(left: 20.0, right: 20.0),
@@ -127,41 +118,32 @@ class _SignUpState extends State<SignUp> {
                       inputType: TextInputType.emailAddress,
                     ),
                     SizedBox(width: 10.0),
-                    TextFormField(
-                      validator: (password) {
-                        Pattern pattern =
-                            r'^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{6,}$';
-                        RegExp regex = new RegExp(pattern);
-                        if (!regex.hasMatch(password))
-                          return '     Invalid password';
-                        else
-                          return null;
-                      },
-                      textAlign: TextAlign.start,
-                      controller: password,
-                      style: TextStyle(fontSize: 14.0),
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.only(bottom: 0.0, top: 20.0),
-                        // isDense: true,
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                        hintText: "Password",
+                    // TextFormField(
+                    //   textAlign: TextAlign.start,
+                    //   controller: password,
+                    //   style: TextStyle(fontSize: 14.0),
+                    //   decoration: InputDecoration(
+                    //     contentPadding: EdgeInsets.only(bottom: 0.0, top: 20.0),
+                    //     // isDense: true,
+                    //     enabledBorder: UnderlineInputBorder(
+                    //       borderSide: BorderSide(color: Colors.grey),
+                    //     ),
+                    //     hintText: "Password",
 
-                        // border: InputBorder.none,
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _togglevisibility = !_togglevisibility;
-                            });
-                          },
-                          icon: _togglevisibility
-                              ? Icon(Icons.visibility_off)
-                              : Icon(Icons.visibility),
-                        ),
-                      ),
-                      obscureText: _togglevisibility,
-                    ),
+                    //     // border: InputBorder.none,
+                    //     suffixIcon: IconButton(
+                    //       onPressed: () {
+                    //         setState(() {
+                    //           _togglevisibility = !_togglevisibility;
+                    //         });
+                    //       },
+                    //       icon: _togglevisibility
+                    //           ? Icon(Icons.visibility_off)
+                    //           : Icon(Icons.visibility),
+                    //     ),
+                    //   ),
+                    //   obscureText: _togglevisibility,
+                    // ),
                     SizedBox(width: 10.0),
                     FormInputs(
                       input: 'Mobile Number',
@@ -193,7 +175,7 @@ class _SignUpState extends State<SignUp> {
                 color: Colors.black,
                 elevation: 7.0,
                 child: Center(
-                    child: Text('Create an Account',
+                    child: Text('Edit Details',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -224,7 +206,6 @@ class _SignUpState extends State<SignUp> {
                         savedetailsTopref(
                             id: value.id,
                             name: value.name,
-                            verified: value.verified,
                             username: value.username,
                             location: value.location,
                             account: value.account,
@@ -232,7 +213,7 @@ class _SignUpState extends State<SignUp> {
                       });
                       Navigator.pop(context);
                       Fluttertoast.showToast(
-                        msg: 'SignUp complete',
+                        msg: 'Edit complete',
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM,
                         timeInSecForIosWeb: 1,
@@ -240,12 +221,12 @@ class _SignUpState extends State<SignUp> {
                         textColor: Colors.white,
                         fontSize: 10.0,
                       );
-                      Navigator.of(context).pushNamed('/main-screen');
+                      Navigator.of(context).pushNamed('/profile-page');
                     } else if (value.statusCode == 400) {
                       print("eereafsdfasdfadsf");
                       print(value.data['error']);
                       Fluttertoast.showToast(
-                        msg: 'SignUp failed',
+                        msg: 'Edit failed',
                         toastLength: Toast.LENGTH_SHORT,
                         gravity: ToastGravity.BOTTOM,
                         timeInSecForIosWeb: 1,
@@ -260,27 +241,6 @@ class _SignUpState extends State<SignUp> {
                 }
               },
             ),
-          ),
-          SizedBox(height: 15.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text('Already have an account?'),
-              SizedBox(width: 5.0),
-              InkWell(
-                onTap: () {
-                  // Navigator.of(context).pushNamed('/sign-up');
-                  Navigator.of(context).pushReplacementNamed('/log-in');
-                },
-                child: Text(
-                  'LogIn',
-                  style: TextStyle(
-                      color: Colors.yellow[700],
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline),
-                ),
-              ),
-            ],
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:BhansaGharChef/screens/addfood.dart';
 import 'package:BhansaGharChef/screens/mainscreen.dart';
+import 'package:BhansaGharChef/screens/profilepage.dart';
 import 'package:BhansaGharChef/screens/splashscreen.dart';
 import 'package:flutter/material.dart';
 
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         '/log-in': (BuildContext context) => new LogIn(),
         '/main-screen': (BuildContext context) => new MainScreen(),
         '/add-food': (BuildContext context) => new AddFood(),
+        '/profile-page': (BuildContext context) => new ProfilePage(),
       },
     );
   }

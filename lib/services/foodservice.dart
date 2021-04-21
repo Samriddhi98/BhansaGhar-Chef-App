@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:BhansaGharChef/models/foodModel.dart';
+import 'package:BhansaGharChef/models/orderModel.dart';
 import 'package:BhansaGharChef/screens/addfood.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,17 +16,21 @@ class FoodService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return String
     this.token = prefs.getString("token");
-    print('add food token$token');
+    //  print('add food token$token');
   }
 
   Future<void> setIdValuesSF() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //Return String
-    id = prefs.getString("id");
-    print('chef $id');
+    id = prefs.getString("cid");
+    // rint('chef $id');
   }
 
-  String baseUrl = "https://bhansagharapi.herokuapp.com";
+  // String baseUrl = "https://bhansagharapi.herokuapp.com";
+  // String baseUrl = "http://10.0.2.2:5000";
+  // String baseUrl = "http://192.168.2.229:5000";
+  String baseUrl = "http://192.168.1.121:5000";
+
   Dio dio = Dio();
 
   /* Future<Response> postAddFood(Map<String,dynamic> formData, String token) async {
@@ -74,10 +80,10 @@ class FoodService {
   Future<List<FoodModel>> getFoodDetails() async {
     await setIdValuesSF();
     await setTokenValuesSF();
-    print(id);
+    //  print('get food details: $id');
     String endPoint = "/api/v1/foods/me/$id";
     String url = baseUrl + endPoint;
-    print(token);
+    // print('get food details: $token');
     List<dynamic> responseData;
     List<FoodModel> foodListData;
     // print(rm.username);
@@ -101,8 +107,8 @@ class FoodService {
         foodListData = responseData.map((e) => FoodModel.fromJson(e)).toList();
         // registermodelData =
         //     responseData.map((e) => RegisterModel.fromJson(e)).toList();
-        print("food response");
-        print(response.data);
+        //  print("food response");
+        //   print(response.data);
 
         // List<FoodModel> foodlist = [];
         // Map foodMap = jsonDecode(response.data);
@@ -165,6 +171,7 @@ class FoodService {
   }
 
   Future<Response> addFood(FoodModel foodModel) async {
+    await setTokenValuesSF();
     String fileName = foodModel.photo.path
         .split('/')
         .last; //   String fileName = file.path.split('/').last;
@@ -189,7 +196,7 @@ class FoodService {
     print(data.fields);
     print(data.files);
     Dio dio = new Dio();
-    String baseUrl = "https://bhansagharapi.herokuapp.com";
+    // String baseUrl = "https://bhansagharapi.herokuapp.com";
     String endPoint = "/api/v1/foods";
     String url = baseUrl + endPoint;
     final response = await dio.post(url,
@@ -206,5 +213,109 @@ class FoodService {
   data: data)
   .then((response) => print(response))
   .catchError((error) => print(error)); */
+  }
+
+  Future<Response> updateFood(
+      FoodModel foodModel, String foodId, bool hasphoto) async {
+    await setTokenValuesSF();
+    MultipartFile image;
+    Map data;
+    print('edited orice${foodModel.price}');
+    print('food id for edit$foodId');
+    print('has photo value$hasphoto');
+    if (hasphoto == true) {
+      String fileName = foodModel.photo.path.split('/').last;
+
+      image = await MultipartFile.fromFile(foodModel.photo.path,
+          filename: fileName, contentType: MediaType('image', 'jpeg'));
+
+      data = {
+        "photo": image,
+        "name": foodModel.name,
+        "price": foodModel.price,
+        "description": foodModel.description,
+        "time": foodModel.time,
+        "category": foodModel.category,
+        "type": foodModel.type,
+      };
+    } else {
+      // data = FormData.fromMap({
+      //   // "photo": image,
+      //   "name": foodModel.name,
+      //   "price": foodModel.price,
+      //   "description": foodModel.description,
+      //   "time": foodModel.time,
+      //   "category": foodModel.category,
+      //   "type": foodModel.type,
+      // });
+
+      data = {
+        // "photo": image,
+        "name": foodModel.name,
+        "price": foodModel.price,
+        "description": foodModel.description,
+        "time": foodModel.time,
+        "category": foodModel.category,
+        "type": foodModel.type,
+      };
+    }
+
+    var headers = {
+      'authorization': 'Bearer $token',
+    };
+
+    // print(data.fields);
+    // print(data.files);
+    Dio dio = new Dio();
+    // String baseUrl = "https://bhansagharapi.herokuapp.com";
+    String endPoint = "/api/v1/foods/$foodId";
+    String url = baseUrl + endPoint;
+    final response = await dio.put(url,
+        data: data,
+        options: Options(headers: headers, contentType: "application/json"));
+    print('edit food ko response$response');
+    return response;
+  }
+
+  Future<List<OrderModel>> getOrderDetails() async {
+    await setIdValuesSF();
+    await setTokenValuesSF();
+    //  print('get food details: $id');
+    String endPoint = "/api/v1/orders/$id";
+    String url = baseUrl + endPoint;
+    // print('get food details: $token');
+    List<dynamic> responseData;
+    List<OrderModel> orderListData;
+    // print(rm.username);
+    Response response;
+    try {
+      response = await dio.get(
+        url,
+        options: Options(headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          "Authorization": "Bearer $token"
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        responseData = response.data["data"];
+        print(responseData);
+        print('order data:${responseData.runtimeType}');
+
+        orderListData = // responseData.map((e) => print('hello'));
+            responseData.map((e) => OrderModel.fromJson(e)).toList();
+
+        return orderListData;
+        // return response;
+      }
+    } catch (e) {
+      print("Errrorr aaayo! k error aayo ta? $e");
+      DioError err;
+      err = e;
+      print(err.response);
+      // return err.response;
+    }
+
+    return orderListData;
   }
 }

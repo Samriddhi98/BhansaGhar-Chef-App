@@ -5,6 +5,7 @@ import 'package:BhansaGharChef/services/foodservice.dart';
 import 'package:BhansaGharChef/widgets/forminput.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_parser/http_parser.dart';
@@ -37,8 +38,10 @@ List<MyType> selectedtype = [];
 class AddFood extends StatefulWidget {
   final String navigation;
   final FoodModel foodData;
+  final String foodID;
 
-  const AddFood({Key key, this.navigation, this.foodData}) : super(key: key);
+  const AddFood({Key key, this.navigation, this.foodData, this.foodID})
+      : super(key: key);
   @override
   _AddFoodState createState() => _AddFoodState();
 }
@@ -54,6 +57,13 @@ class _AddFoodState extends State<AddFood> {
   TextEditingController price;
   TextEditingController time;
   TextEditingController description;
+  String oldName;
+  int oldPrice;
+  int oldTime;
+  String oldDesc;
+  String oldcategory;
+  List<String> oldtype;
+  File oldPhoto;
 
   File _image;
 
@@ -112,26 +122,6 @@ class _AddFoodState extends State<AddFood> {
   data: data)
   .then((response) => print(response))
   .catchError((error) => print(error)); */
-  }
-
-  _imgFromCamera() async {
-    File image = File(await ImagePicker()
-        .getImage(source: ImageSource.camera, imageQuality: 50)
-        .then((pickedFile) => pickedFile.path));
-
-    setState(() {
-      _image = image;
-    });
-  }
-
-  _imgFromGallery() async {
-    File image = File(await ImagePicker()
-        .getImage(source: ImageSource.gallery, imageQuality: 50)
-        .then((pickedFile) => pickedFile.path));
-
-    setState(() {
-      _image = image;
-    });
   }
 
   void _showPicker(context) {
@@ -358,6 +348,17 @@ class _AddFoodState extends State<AddFood> {
     price = widget.navigation == "Edit"
         ? TextEditingController(text: (widget.foodData.price).toString())
         : TextEditingController();
+    //foodId = widget.navigation == "Edit" ? widget.foodData.id : "";
+
+    print('foodID in addfood${widget.foodID}');
+    // oldName = widget.foodData.name;
+    // oldPrice = widget.foodData.price;
+    // oldTime = widget.foodData.time;
+    // oldDesc = widget.foodData.description;
+    // oldcategory = widget.foodData.category;
+    // oldtype = widget.foodData.type;
+    // oldPhoto = widget.foodData.photo;
+
     //  category = TextEditingController();
     // type = TextEditingController();
 
@@ -381,7 +382,7 @@ class _AddFoodState extends State<AddFood> {
       appBar: AppBar(
           centerTitle: true,
           title: Text(
-            'Add Menu',
+            widget.navigation == 'Edit' ? 'Edit Menu' : 'Add Menu',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           backgroundColor: Colors.white),
@@ -425,42 +426,76 @@ class _AddFoodState extends State<AddFood> {
                 margin: EdgeInsets.only(top: 10.0),
                 width: 165.0,
                 height: 200,
-                //   color: Colors.yellowAccent,
+                color: Colors.yellowAccent,
                 child: GestureDetector(
-                  onTap: () {
-                    _showPicker(context);
-                    //_choose();
-                  },
-                  child: CircleAvatar(
-                    radius: 55,
-                    backgroundColor: Color(0xffFDCF09),
-                    child: _image != null //|| widget.foodData.photo != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: Image.file(
-                              widget.navigation == 'Edit'
-                                  ? widget.foodData.photo
-                                  : _image,
+                  onTap: widget.navigation != 'Edit'
+                      ? () {
+                          _showPicker(context);
+                          //_choose();
+                        }
+                      : () {},
+                  // child: CircleAvatar(
+                  //   radius: 55,
+                  //   backgroundColor: Color(0xffFDCF09),
+                  child: (widget.navigation == 'Edit')
+                      ? widget.foodData.image !=
+                              null //|| widget.foodData.photo != null
+                          ? ClipRRect(
+                              // borderRadius: BorderRadius.circular(55),
+                              child: _image != null
+                                  ? Image.file(
+                                      _image,
+                                      width: 140,
+                                      height: 100,
+                                      fit: BoxFit.fitHeight,
+                                    )
+                                  : Image.network(
+                                      widget.foodData.image,
+                                      fit: BoxFit.fill,
+                                    ),
+
+                              // child: Image.file(
+                              //   widget.navigation == 'Edit'
+                              //       ? widget.foodData.photo
+                              //       : _image,
+                              //   width: 140,
+                              //   height: 200,
+                              //   fit: BoxFit.cover,
+                              // ),
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                  borderRadius: BorderRadius.circular(50)),
                               width: 140,
                               height: 200,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : Container(
-                            decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(50)),
-                            width: 140,
-                            height: 200,
-                            child: Icon(
-                              Icons.camera_alt,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                  ),
+                              child: Icon(
+                                Icons.camera_alt,
+                                color: Colors.grey[800],
+                              ),
+                            )
+                      : _image != null
+                          ? Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Image.file(
+                                _image,
+                                width: 140,
+                                height: 100,
+                                fit: BoxFit.fitHeight,
+                              ),
+                            )
+                          : Center(
+                              child: Text(
+                              'Add a photo',
+                              style: TextStyle(color: Colors.grey),
+                            )),
                 ),
+                // circle avatar end  ),
+              ),
 
-                /* Stack(
+              /* Stack(
                   children: <Widget>[
                     Container(
                       margin: EdgeInsets.only(top: 10.0),
@@ -511,12 +546,43 @@ class _AddFoodState extends State<AddFood> {
                         ))
                   ],
                 ), */
-              )
             ],
           ),
 
           /* */
         ),
+        widget.navigation == 'Edit'
+            ? Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  margin: EdgeInsets.only(right: 10.0),
+                  width: deviceSize.width / 3,
+                  height: 40.0,
+                  //   color: Colors.amberAccent,
+                  alignment: Alignment.bottomRight,
+                  child: TextButton(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.camera_alt,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(
+                          width: 5.0,
+                        ),
+                        Text(
+                          'Edit Photo',
+                          style: TextStyle(color: Colors.grey),
+                        )
+                      ],
+                    ),
+                    onPressed: () {
+                      getImage();
+                    },
+                  ),
+                ),
+              )
+            : Container(),
         Container(
           margin: EdgeInsets.all(5.0),
           padding: EdgeInsets.all(10.0),
@@ -601,18 +667,65 @@ class _AddFoodState extends State<AddFood> {
             //   color: Colors.amber,
             child: FlatButton.icon(
               onPressed: () {
-                print(selectedcategory);
-                print(selectedtype);
-                FoodService().addFood(FoodModel(
-                    photo: _image,
-                    name: name.text,
-                    price: int.parse(price.text),
-                    description: description.text,
-                    time: int.parse(time.text),
-                    category: selectedcategory.title,
-                    type: selectedtype
-                        .map((MyType type) => type.title)
-                        .toList()));
+                print('edited value${price.text}');
+                if (widget.navigation == 'Edit') {
+                  FoodService()
+                      .updateFood(
+                          FoodModel(
+                              photo: _image,
+                              name: name.text,
+                              price: int.parse(price.text),
+                              description: description.text,
+                              time: int.parse(time.text),
+                              category: selectedcategory.title,
+                              type: selectedtype
+                                  .map((MyType type) => type.title)
+                                  .toList()),
+                          widget.foodID,
+                          _image == null ? false : true)
+                      .then((value) {
+                    if (value.statusCode == 201) {
+                      Fluttertoast.showToast(
+                        msg: 'Food Item updated in menu',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.grey,
+                        textColor: Colors.white,
+                        fontSize: 10.0,
+                      );
+                    }
+                  });
+                } else {
+                  print(selectedcategory);
+                  print(selectedtype);
+
+                  FoodService()
+                      .addFood(FoodModel(
+                          photo: _image,
+                          name: name.text,
+                          price: int.parse(price.text),
+                          description: description.text,
+                          time: int.parse(time.text),
+                          category: selectedcategory.title,
+                          type: selectedtype
+                              .map((MyType type) => type.title)
+                              .toList()))
+                      .then((value) {
+                    if (value.statusCode == 201) {
+                      Fluttertoast.showToast(
+                        msg: 'Food Item added to menu',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.grey,
+                        textColor: Colors.white,
+                        fontSize: 10.0,
+                      );
+                    }
+                  });
+                }
+
                 // _upload(FoodModel(
                 //     photo: _image,
                 //     name: name.text,

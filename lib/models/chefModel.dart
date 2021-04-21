@@ -19,6 +19,7 @@ class Chef {
     this.location,
     this.account,
     this.createdAt,
+    this.verified,
     this.v,
   });
 
@@ -31,6 +32,7 @@ class Chef {
   String location;
   int account;
   String createdAt;
+  bool verified;
   int v;
 
   Chef get data {
@@ -42,12 +44,13 @@ class Chef {
         id: json["_id"],
         name: json["name"],
         username: json["username"],
+        verified: json["verified"],
         email: json["email"],
         contact: json["contact"],
         location: json["location"],
         account: json["account"],
         createdAt: json["createdAt"],
-        v: json["-v"],
+        //  v: json["-v"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -56,10 +59,11 @@ class Chef {
         "name": name,
         "username": username,
         "email": email,
+        "verified": verified,
         "contact": contact,
         "location": location,
         "account": account,
         "createdAt": createdAt,
-        "-v": v,
+        // "-v": v,
       };
 }

@@ -2,14 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 
 class RegisterModel {
-  String firstName,
-      lastName,
-      username,
-      email,
-      password,
-      location,
-      contact,
-      account;
+  String firstName;
+  String lastName;
+  String username;
+  String email;
+  String password;
+  String location;
+  String contact;
+  String account;
+  String fcmToken;
 
   RegisterModel(
       {@required this.firstName,
@@ -19,19 +20,19 @@ class RegisterModel {
       @required this.password,
       @required this.location,
       @required this.contact,
-      @required this.account}
-      );
-      
+      @required this.account,
+      @required this.fcmToken});
+
   factory RegisterModel.fromJson(Map<String, dynamic> json) {
     return RegisterModel(
-      firstName: json["firstName"],
-      lastName: json["lastName"],
-      username: json["username"],
-      email: json["email"],
-      password: json["password"],
-      location: json["location"],
-      contact: json["contact"],
-      account: json["account"],
-    );
+        firstName: json["firstName"],
+        lastName: json["lastName"],
+        username: json["username"],
+        email: json["email"],
+        password: json["password"],
+        location: json["location"],
+        contact: json["contact"],
+        account: json["account"],
+        fcmToken: json["fcmToken"]);
   }
 }

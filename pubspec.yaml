@@ -33,8 +33,10 @@ dependencies:
   dio: ^3.0.10
   fluttertoast: ^7.1.6
   shared_preferences: ^0.5.12+4
+  cached_network_image: ^2.5.1
   image_picker: ^0.6.6+5
   flutter_session: ^0.1.1
+  firebase_messaging: ^4.0.0+1
 
 dev_dependencies:
   flutter_test:
